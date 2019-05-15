@@ -103,7 +103,7 @@
     //is_FAULTY_CURRENT_SENSOR = incomingByte && (1 << FAULTY_CURRENT_SENSOR);
     is_FAULTY_TEMP_SENSOR =  incomingByte && (1 << FAULTY_TEMPERATURE_SENSOR);
     is_OVER_TEMP = incomingByte && (1 << OVER_TEMPERATURE);
-    is_OVER_CURRENT = incomingByte && (1 << OVER_CURRENT);
+    //is_OVER_CURRENT = incomingByte && (1 << OVER_CURRENT);
     is_OVER_VOLT = incomingByte && (1 << OVER_VOLTAGE);
     is_LOW_VOLT = incomingByte && (1 << LOW_VOLTAGE);
 
@@ -134,7 +134,7 @@
     else if (!isError) {
       batterylvl = (int)incomingByte;
       LCD.writeBatteryLevel(batterylvl);
-    }
+    } 
   }
 
   void ISR_PROX() {
@@ -145,6 +145,11 @@
 void UI_setup() {
   Serial.begin(9600); //begin Serial and tft
   tft.begin();
+  //LCD Initialization
+
+  //motor Initialization
+  motor_init();
+  motor_ready();
   //define all the digital pins for buttons
   pinMode(bAA,INPUT_PULLUP);
   pinMode(lAA,OUTPUT);
