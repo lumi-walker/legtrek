@@ -193,3 +193,12 @@ void readJoystick() {
   yR = yR/512;
   rRead = sqrt(pow(xR,2) + pow(yR,2));
 }
+
+void buttonBlink(int whichLED) {
+  if (millis() % 2000 < 1000) {
+    digitalWrite(whichLED,HIGH);
+  }
+  else {
+    digitalWrite(whichLED,LOW);
+  }
+}

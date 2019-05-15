@@ -1,15 +1,6 @@
 //State Machine Logic
 #include "ui_functions_init.h"
 
-void buttonBlink(int whichLED) {
-  if (millis() % 2000 < 1000) {
-    digitalWrite(whichLED,HIGH);
-  }
-  else {
-    digitalWrite(whichLED,LOW);
-  }
-}
-
 void DefaultMode() {
   setSpeed = 0.00;
 }
