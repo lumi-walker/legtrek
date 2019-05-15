@@ -134,11 +134,11 @@
     else if (!isError) {
       batterylvl = (int)incomingByte;
       LCD.writeBatteryLevel(batterylvl);
-    } 
+    }
   }
 
   void ISR_PROX() {
-    stateBT = digitalRead(PROX_PIN);
+    //stateBT = digitalRead(PROX_PIN);
   }
 
 //run this before everything else
@@ -148,8 +148,8 @@ void UI_setup() {
   //LCD Initialization
 
   //motor Initialization
-  motor_init();
-  motor_ready();
+//  motor_init();
+//  motor_ready();
   //define all the digital pins for buttons
   pinMode(bAA,INPUT_PULLUP);
   pinMode(lAA,OUTPUT);

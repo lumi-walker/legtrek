@@ -210,13 +210,6 @@ void LCD::writeErrorPanel() {
   else {
     tft.fillRect(x0*dx-xoff,2*dy,dx+2*xoff,dy, ILI9341_GREEN);
   }
-  //if detect over current, same action as above
-  if(is_OVER_CURRENT) {
-    tft.fillRect(x0*dx-xoff,3*dy,dx+2*xoff,dy, ILI9341_RED);
-  }
-  else {
-    tft.fillRect(x0*dx-xoff,3*dy,dx+2*xoff,dy, ILI9341_GREEN);
-  }
   //if detect over voltage, same action as above
   if(is_OVER_VOLT) {
     tft.fillRect(x0*dx-xoff,4*dy,dx+2*xoff,dy, ILI9341_RED);
