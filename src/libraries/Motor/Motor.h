@@ -3,7 +3,7 @@
 
 #include "SMi21.h"
 #include "motor_pin_assignments.h"
-#include "global_include.h"
+
 
 void motor_init() {
 	pinMode(M1_IN1, OUTPUT);
@@ -37,31 +37,18 @@ SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,M2_IN5,M2_IN6);
 
 void motor_ready(){
 	M1.turnon();
-  	//M2.turnon();
+  M2.turnon();
 
   M1.faststopoff();
   M1.holdingoff();
 
-  M1.setacc(4000);
+  M2.faststopoff();
+  M2.holdingoff();
 
-  //M2.faststopoff();
-  //M2.holdingoff();
+	M1.setacc(DEFAULT_ACCEL);
 }
 
 
-//example of higher level function
-void setspeed(float speed,bool direc){
-
-  M1.setvel(speed);
-  M2.setvel(speed);
-
-  if(speed == 0) {
-  	M1.faststopon();
-	M2.faststopon();
-  }
-	M1.setdirect(!direc);
-	M2.setdirect(direc);
-}
 
 void turnRight(float vel_sp){
 	M1.setvel(vel_sp);
@@ -76,6 +63,7 @@ void turnLeft(float vel_sp){
 	M1.setdirect(0);
 	M2.setdirect(0);
 }
+
 
 void setacc_all(int acc){
 	M1.setacc(acc);
@@ -100,34 +88,26 @@ void decel_to_zero(float acc=DEFAULT_ACCEL){
 		M1.setvel(vel_sp);
 		M2.setvel(vel_sp);
 
-		/*
-		work towards this
-		long waitTime = calcwaitTime(acc,vel_mph);
-		*/
-		long waitTime = 7000;
+		float vel_rpm = 1882.35*vel_sp;
+		long waitTime = vel_sp/acc*1000;
 
 		delay(waitTime);
 		M1.faststopon();
 		M2.faststopon();
 		Serial.println("DECELL COMPLETE");
-	}	
+	}
 }
 
-int calcwaitTime(int acc,float vel_mph){
-	int waitTime = acc;
-	return waitTime;
-}
+void setspeed(float speed,bool direc){
 
-float mph2rpm(float vel_mph){
-	float vel_mps = 0.44704*vel_mph;
-	int vel_rpm = vel_mps/0.15875*2*PI/60; //radius = 0.15875m
-	return vel_rpm;
+  M1.setvel(speed);
+  M2.setvel(speed);
+
+  if(speed == 0) {
+  	faststopon_all();
+  }
+	M1.setdirect(!direc);
+	M2.setdirect(direc);
 }
-/*
-float gtorpmps(float in){
-	int acc_rpmps = in;
-	return acc_rpmps;
-}
-*/
 
 #endif

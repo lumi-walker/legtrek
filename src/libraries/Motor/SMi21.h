@@ -1,7 +1,3 @@
-#ifndef SMI21_H
-#define SMI21_H
-
-#include "motor_pin_assignments.h"
 
 /*
 SMi21 Motor Configuration using DCmind Soft
@@ -20,18 +16,18 @@ OUT4
 
 */
 
+#ifndef SMI21_H
+#define SMI21_H
 
-
-float DEFAULT_ACCEL = 200.0f;
+#include "global_include.h"
+float DEFAULT_ACCEL = 4000.0f;
 bool FORWARD = true;
 bool REVERSE = false;
-
 class SMi21 {
-
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
-    bool fastStopOn;
   public:
     SMi21 (int,int,int,int,int,int);
+
     //functions
     void turnon();
     void turnoff();
@@ -42,7 +38,6 @@ class SMi21 {
     void setacc(int);
     void setvel(float);
     void setdirect(bool);
-    void decelerate(float,float);
 };
 
 
@@ -64,11 +59,9 @@ void SMi21::turnoff() {
   digitalWrite(onoffPin,LOW);
 }
 void SMi21::faststopon(){
-  fastStopOn = true;
   digitalWrite(faststopPin,HIGH);
 }
 void SMi21::faststopoff(){
-  fastStopOn = false;
   digitalWrite(faststopPin,LOW);
 }
 void SMi21::holdingon(){
@@ -77,41 +70,26 @@ void SMi21::holdingon(){
 void SMi21::holdingoff(){
   digitalWrite(holdingPin,LOW);
 }
-void SMi21::setacc(int acc){ //vel from UI
+void SMi21::setacc(int acc_rpmps){ //vel from UI
   //------------------need to determine acc
-  int acc_pwm = 4095-acc;
+  int acc_pwm = 4095-acc_rpmps;
   analogWrite(accPin,acc_pwm);
 }
 
 
 void SMi21::setvel(float vel_mph){ //vel from UI
   //--------------------how to define direc
-    faststopoff();
-
     if(vel_mph <= minSpeed) {
-      vel_mph = minSpeed;  
+      vel_mph = minSpeed;
     }
-    
-    int vel_pwm = (vel_mph-minSpeed)/maxSpeed*4095.0f;
+    faststopoff();
+    float maxvel_mph = maxSpeed;
+    int vel_pwm = (vel_mph-minSpeed)/maxvel_mph*4095.0f;
     analogWrite(velPin,vel_pwm);
 }
 
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
-}
 
-void SMi21::decelerate(float vel_mph,float acc){
-  if (vel_mph <= .3){
-    faststopon();
-  }
-  else{
-    setvel(0);
-    //calc waitTime after determine scaling for accleration
-    long waittime = 1000;
-    delay(waittime);
-    faststopon();
-  }
-}
 
 #endif
-
