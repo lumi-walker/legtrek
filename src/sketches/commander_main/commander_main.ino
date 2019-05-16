@@ -29,7 +29,7 @@ long debounceThreshold = 10000;
 long strideStepTime = 3000000;
 
 // vel setpoint when IR sensors triggered in mph
-float AA_vel_sp = 0.2;
+float AA_vel_sp = 0.8;
 
 // last time the IR sensor was triggered
 volatile long prevTrigTime;
@@ -150,6 +150,8 @@ void runJoystickMode() {
        stateRTN = false;
        stateLTN = false;
        vel_sp = (rRead - rDeadBand)*(maxSpeed - minSpeed) + minSpeed;
+       setspeed(vel_sp,FORWARD);
+       Serial.println("FORWARD");
        
     } else if(angRead < validAngleRangeRTurn_max && angRead > validAngleRangeRTurn_min) {
         //right turn
