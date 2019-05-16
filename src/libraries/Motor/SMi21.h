@@ -88,12 +88,11 @@ void SMi21::setvel(float vel_mph){ //vel from UI
   //--------------------how to define direc
     faststopoff();
 
-    if(vel_mph <= 0.3) {
-      vel_mph = 0.3;  
+    if(vel_mph <= minSpeed) {
+      vel_mph = minSpeed;  
     }
-
-    float maxvel_mph = 1.5;
-    int vel_pwm = (vel_mph-.3)/maxvel_mph*4095.0f;
+    
+    int vel_pwm = (vel_mph-minSpeed)/maxSpeed*4095.0f;
     analogWrite(velPin,vel_pwm);
 }
 
