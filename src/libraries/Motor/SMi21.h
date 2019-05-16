@@ -1,4 +1,4 @@
-#include "motor_pin_assignments.h"
+
 /*
 SMi21 Motor Configuration using DCmind Soft
 The definitions are inverted due to inverters in circuit
@@ -15,18 +15,11 @@ OUT3
 OUT4
 
 */
-
-
-
-float DEFAULT_ACCEL = 200.0f;
-bool FORWARD = true;
-bool REVERSE = false;
-
 class SMi21 {
-
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
   public:
     SMi21 (int,int,int,int,int,int);
+
     //functions
     void turnon();
     void turnoff();
@@ -37,7 +30,7 @@ class SMi21 {
     void setacc(int);
     void setvel(float);
     void setdirect(bool);
-    void decelerate(float,float);
+    void decelerate(float,int);
 };
 
 
@@ -70,9 +63,9 @@ void SMi21::holdingon(){
 void SMi21::holdingoff(){
   digitalWrite(holdingPin,LOW);
 }
-void SMi21::setacc(int acc){ //vel from UI
+void SMi21::setacc(int acc_rpmps){ //vel from UI
   //------------------need to determine acc
-  int acc_pwm = 4095-acc;
+  int acc_pwm = 4095-acc_rpmps;
   analogWrite(accPin,acc_pwm);
 }
 
@@ -88,17 +81,16 @@ void SMi21::setvel(float vel_mph){ //vel from UI
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
 }
-
-void SMi21::decelerate(float vel_mph,float acc){
+void SMi21::decelerate(float vel_mph,int acc_rpmps){
   if (vel_mph <= .3){
     faststopon();
   }
   else{
     setvel(0);
     //calc waitTime after determine scaling for accleration
-    long waittime = 1000;
+    float vel_rpm = 1882.35*vel_mph;
+    long waittime = vel_rpm/acc_rpmps*1000; //waittime in milliseconds
     delay(waittime);
     faststopon();
   }
 }
-
