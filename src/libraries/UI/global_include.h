@@ -12,8 +12,6 @@
 //Run the LCD software from Adafruit
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 
-//define PI
-#define PI 3.1415926535897932384626433832795
 
 //universal LCD variables
 //LCD full dimensions
@@ -35,8 +33,8 @@ enum {
   stateSit //Sitting mode
 } typedef State;
 
-State currState = stateDE; //current state
-State prevState = stateDE;
+volatile State currState = stateDE; //current state
+volatile State prevState = stateDE;
 
 
 //Serial bytes
@@ -55,7 +53,10 @@ bool is_LOW_VOLT = 0;
 
 #define CRITICAL_ERROR_MASK (1 << OVER_TEMPERATURE) || (1 << OVER_VOLTAGE) || (1 << LOW_VOLTAGE)
 
-bool stateTN = 0; //Turn mode
+volatile bool zero_out_velocity = false;
+
+bool stateRTN = 0; //Turn mode
+bool stateLTN = 0;
 //Joystick (js) modes
 enum {
  jsBrake, //device is braked in turning mode
@@ -84,10 +85,27 @@ int hog = 0;
 //joystick outputs
 double angRead = 0; //angle of pitch
 double rRead =  0; //magnitude of pitch
+double rDeadBand = 0.1;
+double forwardBearing = PI/2;
+double validAngleRange_deg = 10;
+double validAngleRange_rad = validAngleRange_deg * PI / 180.0f;
+
+// joystick angular bounds for moving forward
+double validAngleRangeForward_min = forwardBearing - validAngleRange_rad;
+double validAngleRangeForward_max = forwardBearing + validAngleRange_rad;
+
+// joystick angular bounds for right turn
+double validAngleRangeRTurn_min = 0 - validAngleRange_rad;
+double validAngleRangeRTurn_max = 0 + validAngleRange_rad;
+
+// joystick angular bounds for left turn
+double validAngleRangeLTurn_min = PI - validAngleRange_rad;
+double validAngleRangeLTurn_max = PI + validAngleRange_rad;
 
 //set speed parameters
-float setSpeed = 0.0; //Speed set to motors
-float prevSpeed = setSpeed; //prevSpeed
+float vel_sp = 0.0; //Speed set to motors
+float turn_vel_sp = 0.7;
+float prev_vel_sp = vel_sp; //prev_vel_sp
 float dSpeed = 0.1; //speed change
 float minSpeed = 0.0; //minimum limit in set speed
 float maxSpeed = 1.5; //maximum limit in set speed
@@ -114,14 +132,10 @@ enum {
 ShutDown currShutDown;
 
 enum {
-	FAULTY_TEMPERATURE_SENSOR,
-	OVER_TEMPERATURE, // below here is critical error
-	OVER_VOLTAGE,
-	LOW_VOLTAGE,
-	NUM_MESSAGES
+  FAULTY_TEMPERATURE_SENSOR,
+  OVER_TEMPERATURE, // below here is critical error
+  OVER_VOLTAGE,
+  LOW_VOLTAGE,
+  NUM_MESSAGES
 } typedef BMSErrorMessage;
 
-enum {
-  SITTING_MODE,
-  STANDING_MODE
-} typedef Prox;

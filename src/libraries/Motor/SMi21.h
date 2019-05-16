@@ -1,4 +1,4 @@
-
+#include "motor_pin_assignments.h"
 /*
 SMi21 Motor Configuration using DCmind Soft
 The definitions are inverted due to inverters in circuit
@@ -15,11 +15,18 @@ OUT3
 OUT4
 
 */
+
+
+
+float DEFAULT_ACCEL = 200.0f;
+bool FORWARD = true;
+bool REVERSE = false;
+
 class SMi21 {
+
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
   public:
     SMi21 (int,int,int,int,int,int);
-
     //functions
     void turnon();
     void turnoff();
@@ -81,6 +88,7 @@ void SMi21::setvel(float vel_mph){ //vel from UI
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
 }
+
 void SMi21::decelerate(float vel_mph,float acc){
   if (vel_mph <= .3){
     faststopon();
@@ -93,3 +101,4 @@ void SMi21::decelerate(float vel_mph,float acc){
     faststopon();
   }
 }
+

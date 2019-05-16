@@ -129,7 +129,7 @@ void LCD::startScreen() {
   //write variable text using global variables
   writeBatteryLevel(batterylvl); //read from voltage
   writeErrorPanel();
-  writeSpeed(setSpeed); //should be 0
+  writeSpeed(vel_sp); //should be 0
   writeMode(stateDE); //should be default
   writeTurn(currTurn); //should be braked
 }
@@ -151,13 +151,13 @@ void LCD::writeBatteryLevel(int voltage) {
     tft.fillRect(2*bdx,0,bdx,dy, ILI9341_GREEN);
     tft.drawRect(2*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 60) {
-    tft.fillRect(3*bdx,0,bdx,dy, ILI9341_ORANGE);
+   // tft.fillRect(3*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(3*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 50) {
-    tft.fillRect(4*bdx,0,bdx,dy, ILI9341_ORANGE);
+   // tft.fillRect(4*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(4*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 40) {
-    tft.fillRect(5*bdx,0,bdx,dy, ILI9341_ORANGE);
+   // tft.fillRect(5*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(5*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 30) {
     tft.fillRect(6*bdx,0,bdx,dy, ILI9341_RED);

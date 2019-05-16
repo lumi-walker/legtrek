@@ -3,7 +3,6 @@
 #include "SMi21.h"
 #include "motor_pin_assignments.h"
 
-
 void motor_init() {
 	pinMode(M1_IN1, OUTPUT);
 	pinMode(M1_IN2, OUTPUT);
@@ -36,7 +35,7 @@ SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,M2_IN5,M2_IN6);
 
 void motor_ready(){
 	M1.turnon();
-  M2.turnon();
+  	M2.turnon();
 
   M1.faststopoff();
   M1.holdingoff();
@@ -54,16 +53,16 @@ void setspeed(float speed,bool direc){
 	M2.setdirect(direc);
 }
 
-void turnRight(){
-	M1.setvel(0.7);
-	M2.setvel(0.7);
+void turnRight(float vel_sp){
+	M1.setvel(vel_sp);
+	M2.setvel(vel_sp);
 	M1.setdirect(1);
 	M2.setdirect(1);
 }
 
-void turnLeft(){
-	M1.setvel(0.7);
-	M2.setvel(0.7);
+void turnLeft(float vel_sp){
+	M1.setvel(vel_sp);
+	M2.setvel(vel_sp);
 	M1.setdirect(0);
 	M2.setdirect(0);
 }
@@ -83,10 +82,26 @@ void faststopoff_all(){
 	M2.faststopoff();
 }
 
-void decel_all(float vel_mph1,float vel_mph2,float acc){
-	float vel_mph = max(vel_mph1,vel_mph2);
-	M1.decelerate(vel_mph,acc);
-	M2.decelerate(vel_mph,acc);
+void decel_to_zero(float acc=DEFAULT_ACCEL){
+	if(vel_sp > minSpeed) {
+		vel_sp = minSpeed;
+
+		setacc_all(acc);
+		M1.setvel(vel_sp);
+		M2.setvel(vel_sp);
+
+		/*
+		work towards this
+		long waitTime = calcwaitTime(acc,vel_mph);
+		*/
+		long waitTime = 1000;
+
+		delay(waitTime);
+		M1.faststopon();
+		M2.faststopon();
+		Serial.println("DECELL COMPLETE");
+		delay(3000);
+	}	
 }
 
 int calcwaitTime(int acc,float vel_mph){

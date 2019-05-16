@@ -21,6 +21,8 @@
       }
       else if (currState == stateAA) {
         currState = stateDE;
+        digitalWrite(lAA,LOW);
+        zero_out_velocity = true;
       }
       else {
         //if in neither do nothing haha
@@ -35,6 +37,8 @@
       }
       else if (currState == stateJS) {
         currState = stateDE;
+        digitalWrite(lJS,LOW);
+        zero_out_velocity = true;
       }
       else {
         //if in neither do nothing haha
@@ -49,6 +53,8 @@
       }
       else if (currState == stateSS) {
         currState = stateDE;
+        digitalWrite(lSS,LOW);
+        zero_out_velocity = true;
       }
       else {
         //if in neither do nothing haha
@@ -58,8 +64,8 @@
 
   void ISR_UP() {
     if(debounceCheck(prevUP)) {
-      if (currState == stateSS && setSpeed < maxSpeed) {
-        setSpeed = setSpeed + dSpeed;
+      if (currState == stateSS && vel_sp < maxSpeed) {
+        vel_sp = vel_sp + dSpeed;
       }
       else {
         //if in neither do nothing haha
@@ -69,8 +75,8 @@
 
   void ISR_DN() {
     if(debounceCheck(prevDN)) {
-      if (currState == stateSS && setSpeed > minSpeed) {
-        setSpeed = setSpeed - dSpeed;
+      if (currState == stateSS && vel_sp > minSpeed) {
+        vel_sp = vel_sp - dSpeed;
       }
       else {
         //if in neither do nothing haha
@@ -81,16 +87,22 @@
   void ISR_TN() {
     if(debounceCheck(prevTN)) {
       if (currState == stateSS) {
+        zero_out_velocity = true;
         currState = stateTurnSS;
       }
       else if (currState == stateAA) {
+        zero_out_velocity = true;
         currState = stateTurnAA;
       }
       else if (currState == stateTurnSS) {
+        zero_out_velocity = true;
         currState = stateSS;
+        digitalWrite(lTN,LOW);
       }
       else if (currState == stateTurnAA) {
+        zero_out_velocity = true;
         currState = stateAA;
+        digitalWrite(lTN,LOW);
       }
       else {
         //if in neither do nothing haha
@@ -161,6 +173,9 @@ void UI_setup() {
   pinMode(bDN,INPUT_PULLUP);
   pinMode(bTN,INPUT_PULLUP);
   pinMode(lTN,OUTPUT);
+ // pinMode(PROX_SEATED_PIN,INPUT);
+  // do not uncomment until pin is
+  //pinMode(PROX_STAND_PIN,INPUT)
 
   //debounce timers
   prevAA = millis();
@@ -169,6 +184,15 @@ void UI_setup() {
   prevUP = millis();
   prevDN = millis();
   prevTN = millis();
+
+  // initialize currProxState BEFORE interrupts
+  /*
+  if(digitalRead(PROX_SEATED_PIN)) {
+    currProxState = SITTING_MODE;
+  } else {
+    currProxState = STANDING_MODE;
+  }
+  */
 
   //digital pin interrupts
   attachInterrupt(digitalPinToInterrupt(bAA),ISR_AA,FALLING);
