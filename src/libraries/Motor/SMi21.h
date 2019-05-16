@@ -20,9 +20,12 @@ OUT4
 #define SMI21_H
 
 #include "global_include.h"
-float DEFAULT_ACCEL = 4000.0f;
+float DEFAULT_ACCEL = 5000.0f;
 bool FORWARD = true;
 bool REVERSE = false;
+int max_acc_rpmps = 8421;
+int min_acc_rpmps = 4258;
+
 class SMi21 {
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
   public:
@@ -72,7 +75,7 @@ void SMi21::holdingoff(){
 }
 void SMi21::setacc(int acc_rpmps){ //vel from UI
   //------------------need to determine acc
-  int acc_pwm = 4095-acc_rpmps;
+  int acc_pwm = 4095-(acc_rpmps-min_acc_rpmps)/(max_acc_rpmps-min_acc_rpmps)*4095;
   analogWrite(accPin,acc_pwm);
 }
 
@@ -90,6 +93,6 @@ void SMi21::setvel(float vel_mph){ //vel from UI
 
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
-
+}
 
 #endif
