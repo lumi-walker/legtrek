@@ -23,11 +23,10 @@ void printStatus();
  */
  
 // active assist util variables
-long debounceThreshold = 10000;
+long debounceThreshold = 200000;
 
 // period of time to move forward when IR sensors triggered
 long strideStepTime = 3000000;
-
 // vel setpoint when IR sensors triggered in mph
 float AA_vel_sp = 0.8;
 
@@ -131,7 +130,6 @@ void runActiveAssistMode() {
   if(initStride) {
     vel_sp = AA_vel_sp;
     setspeed(vel_sp,FORWARD);
-
     initStride = false;
   } else {
     if(micros() - strideStartTime > strideStepTime) {
