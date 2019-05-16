@@ -90,6 +90,6 @@ void SMi21::setvel(float vel_mph){ //vel from UI
 
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
-
+}
 
 #endif
