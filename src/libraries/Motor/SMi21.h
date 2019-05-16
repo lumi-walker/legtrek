@@ -1,4 +1,8 @@
+#ifndef SMI21_H
+#define SMI21_H
+
 #include "motor_pin_assignments.h"
+
 /*
 SMi21 Motor Configuration using DCmind Soft
 The definitions are inverted due to inverters in circuit
@@ -83,7 +87,7 @@ void SMi21::setacc(int acc){ //vel from UI
 void SMi21::setvel(float vel_mph){ //vel from UI
   //--------------------how to define direc
     faststopoff();
-    
+
     if(vel_mph <= 0.3) {
       vel_mph = 0.3;  
     }
@@ -109,4 +113,6 @@ void SMi21::decelerate(float vel_mph,float acc){
     faststopon();
   }
 }
+
+#endif
 

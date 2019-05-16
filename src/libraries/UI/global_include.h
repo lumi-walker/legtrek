@@ -1,10 +1,14 @@
 //global variable definitions
 
+#ifndef GLOBAL_INCLUDES_H
+#define GLOBAL_INCLUDES_H
+
 //include necessary files
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
 #include "math.h"
+#include "BMSUtils.h"
 //#include "BMSUtils.h"
 //#include "motor.h"
 #include "ui_pin_assignments.h"
@@ -131,11 +135,5 @@ enum {
 
 ShutDown currShutDown;
 
-enum {
-  FAULTY_TEMPERATURE_SENSOR,
-  OVER_TEMPERATURE, // below here is critical error
-  OVER_VOLTAGE,
-  LOW_VOLTAGE,
-  NUM_MESSAGES
-} typedef BMSErrorMessage;
+#endif
 

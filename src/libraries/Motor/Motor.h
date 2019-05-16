@@ -1,7 +1,9 @@
-
+#ifndef MOTOR_H
+#define MOTOR_H
 
 #include "SMi21.h"
 #include "motor_pin_assignments.h"
+#include "global_include.h"
 
 void motor_init() {
 	pinMode(M1_IN1, OUTPUT);
@@ -54,7 +56,8 @@ void setspeed(float speed,bool direc){
   M2.setvel(speed);
 
   if(speed == 0) {
-  	faststopon_all();
+  	M1.faststopon();
+	M2.faststopon();
   }
 	M1.setdirect(!direc);
 	M2.setdirect(direc);
@@ -126,3 +129,5 @@ float gtorpmps(float in){
 	return acc_rpmps;
 }
 */
+
+#endif
