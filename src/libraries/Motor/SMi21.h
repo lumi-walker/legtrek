@@ -19,12 +19,7 @@ OUT4
 #ifndef SMI21_H
 #define SMI21_H
 
-#include "global_include.h"
-float DEFAULT_ACCEL = 500.0f;
-bool FORWARD = true;
-bool REVERSE = false;
-int max_acc_rpmps = 956;
-int min_acc_rpmps = 483;
+#include "motor_calib_cons.h"
 
 class SMi21 {
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;

@@ -81,7 +81,8 @@ void faststopoff_all(){
 	M2.faststopoff();
 }
 
-void decel_to_zero(float acc=DEFAULT_ACCEL){
+void decel_to_zero(float vel_sp){
+	float acc=DEFAULT_ACCEL;
 	if(vel_sp > minSpeed) {
 
 		setacc_all(acc);
