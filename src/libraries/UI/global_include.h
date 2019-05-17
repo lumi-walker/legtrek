@@ -111,8 +111,9 @@ float vel_sp = 0.0; //Speed set to motors
 float turn_vel_sp = 0.7;
 float prev_vel_sp = vel_sp; //prev_vel_sp
 float dSpeed = 0.1; //speed change
-float minSpeed = 0.0; //minimum limit in set speed
-float maxSpeed = 1.5; //maximum limit in set speed
+float minSpeed = 0.24; //minimum limit in set speed
+float maxSpeed = 1.2; //maximum limit in set speed
+
 
 //battery level (NEEDS CHANGE)
 int batterylvl = 100; //actually should read from battery voltage
@@ -136,4 +137,3 @@ enum {
 ShutDown currShutDown;
 
 #endif
-

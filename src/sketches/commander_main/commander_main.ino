@@ -21,7 +21,7 @@ void printStatus();
  * ACTIVE ASSIST REGION
  * relocate this bit of code later if logically necessary
  */
- 
+
 // active assist util variables
 long debounceThreshold = 200000;
 
@@ -40,14 +40,14 @@ long strideStartTime;
 // active assist IR pin
 int IRpin = 53;
 
-// active assist ISR 
+// active assist ISR
 void ISR_AA_sensor() {
-  
+
   if(currState == stateAA) {
      if(micros() - prevTrigTime > debounceThreshold) {
         prevTrigTime = micros();
         strideStartTime = micros();
-       
+
         if(vel_sp == 0) {
           initStride = true;
         }
@@ -74,7 +74,7 @@ void loop() {
     decel_to_zero();
     zero_out_velocity = false;
   }
-  
+
   switch(currState) {
     case stateDE:
     //DEFAULT MODE
@@ -104,12 +104,12 @@ void loop() {
     //TURNING IN SET SPEED
       runTurningMode();
       break;
-      
+
     case stateSit:
     //SITTING MODE
       runSittingMode();
       break;
-      
+
     default:
       runDefaultMode();
       break;
@@ -150,7 +150,7 @@ void runJoystickMode() {
        vel_sp = (rRead - rDeadBand)*(maxSpeed - minSpeed) + minSpeed;
        setspeed(vel_sp,FORWARD);
        Serial.println("FORWARD");
-       
+
     } else if(angRead < validAngleRangeRTurn_max && angRead > validAngleRangeRTurn_min) {
         //right turn
         // bring speed to 0 if not turning before
@@ -161,7 +161,7 @@ void runJoystickMode() {
           stateLTN = false;
           vel_sp = turn_vel_sp;
           turnRight(vel_sp);
-        }  
+        }
     } else if(angRead < validAngleRangeLTurn_max && angRead > validAngleRangeLTurn_min) {
       // left turn
 
@@ -171,16 +171,16 @@ void runJoystickMode() {
           stateLTN = true;
           vel_sp = turn_vel_sp;
           turnLeft(vel_sp);
-        }    
+        }
     }
   } else {
     // radius not outside deadband
-   
+
     stateRTN = false;
     stateLTN = false;
     decel_to_zero();
   }
-  
+
 }
 
 void runSetSpeedMode() {
@@ -204,7 +204,7 @@ void runTurningMode() {
             stateLTN = false;
             vel_sp = turn_vel_sp;
             turnRight(vel_sp);
-          }  
+          }
     } else if(angRead < validAngleRangeLTurn_max && angRead > validAngleRangeLTurn_min) {
       // turn left
       Serial.println("TURN LEFT");
@@ -214,16 +214,16 @@ void runTurningMode() {
             stateLTN = true;
             vel_sp = turn_vel_sp;
             turnLeft(vel_sp);
-          }  
+          }
     } else {
           stateRTN = false;
           stateLTN = false;
-          decel_to_zero();  
+          decel_to_zero();
     }
   } else {
           stateRTN = false;
           stateLTN = false;
-          decel_to_zero();  
+          decel_to_zero();
   }
 }
 
@@ -263,16 +263,16 @@ void printStatus() {
   String currentState;
   String vel;
   String stats;
-  
+
   if(currState == stateDE) {
     currentState = "DEFAULT";
   }
-  
+
   if(currState == stateAA) {
     currentState = "ACTIVE ASSIST";
     vel = String(vel_sp);
     String motionState = vel_sp == 0 ? "NOT MOVING" : "MOVING";
-    stats = "Velocity : " + vel + " || " + motionState; 
+    stats = "Velocity : " + vel + " || " + motionState;
   }
 
   if(currState == stateJS) {
@@ -290,7 +290,7 @@ void printStatus() {
   if(currState == stateTurnAA) {
     currentState = "TURN - ACTIVE ASSIST";
     vel = String(vel_sp);
-    
+
   }
 
   if(currState == stateTurnSS) {

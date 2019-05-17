@@ -66,6 +66,7 @@
     if(debounceCheck(prevUP)) {
       if (currState == stateSS && vel_sp < maxSpeed) {
         vel_sp = vel_sp + dSpeed;
+        
       }
       else {
         //if in neither do nothing haha
@@ -77,6 +78,10 @@
     if(debounceCheck(prevDN)) {
       if (currState == stateSS && vel_sp > minSpeed) {
         vel_sp = vel_sp - dSpeed;
+        if(vel_sp <= minSpeed) {
+          vel_sp = minSpeed;
+          zero_out_velocity = true;
+        }
       }
       else {
         //if in neither do nothing haha

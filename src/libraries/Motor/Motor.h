@@ -29,6 +29,7 @@ void motor_init() {
   pinMode(M2_OUT2, INPUT);
   pinMode(M2_OUT3, INPUT);
   pinMode(M2_OUT4, INPUT);
+	analogWriteResolution(12);
 }
 
 SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,M1_IN5,M1_IN6);
@@ -82,19 +83,24 @@ void faststopoff_all(){
 
 void decel_to_zero(float acc=DEFAULT_ACCEL){
 	if(vel_sp > minSpeed) {
-		vel_sp = minSpeed;
 
 		setacc_all(acc);
-		M1.setvel(vel_sp);
-		M2.setvel(vel_sp);
+		M1.setvel(minSpeed);
+		M2.setvel(minSpeed);
 
 		float vel_rpm = 1882.35*vel_sp;
-		long waitTime = vel_sp/acc*1000;
-
+		long waitTime = vel_rpm/acc*1000;
+		vel_sp = minSpeed;
 		delay(waitTime);
 		M1.faststopon();
 		M2.faststopon();
+		Serial.println(acc);
+		Serial.println(vel_sp);
+		Serial.println(waitTime);
 		Serial.println("DECELL COMPLETE");
+	} else {
+		M1.faststopon();
+		M2.faststopon();
 	}
 }
 

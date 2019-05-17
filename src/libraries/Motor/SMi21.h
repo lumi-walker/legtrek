@@ -20,11 +20,11 @@ OUT4
 #define SMI21_H
 
 #include "global_include.h"
-float DEFAULT_ACCEL = 5000.0f;
+float DEFAULT_ACCEL = 500.0f;
 bool FORWARD = true;
 bool REVERSE = false;
-int max_acc_rpmps = 8421;
-int min_acc_rpmps = 4258;
+int max_acc_rpmps = 956;
+int min_acc_rpmps = 483;
 
 class SMi21 {
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
@@ -84,11 +84,22 @@ void SMi21::setvel(float vel_mph){ //vel from UI
   //--------------------how to define direc
     if(vel_mph <= minSpeed) {
       vel_mph = minSpeed;
+      faststopon();
     }
     faststopoff();
     float maxvel_mph = maxSpeed;
     int vel_pwm = (vel_mph-minSpeed)/maxvel_mph*4095.0f;
-    analogWrite(velPin,vel_pwm);
+    if (vel_pwm < 0){
+      analogWrite(velPin,0);
+    }
+    else if (vel_pwm > 4095){
+      analogWrite(velPin,4095);
+    }
+    else{
+      analogWrite(velPin,vel_pwm);
+      Serial.println(vel_pwm);
+    }
+
 }
 
 void SMi21::setdirect(bool direc){
