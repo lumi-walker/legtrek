@@ -9,7 +9,7 @@
 #include "Adafruit_ILI9341.h"
 #include "math.h"
 #include "BMSUtils.h"
-#include "Motor.h"
+#include "motor_calib_cons.h"
 #include "ui_pin_assignments.h"
 
 //Run the LCD software from Adafruit

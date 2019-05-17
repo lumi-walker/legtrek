@@ -29,7 +29,6 @@ void motor_init() {
   pinMode(M2_OUT2, INPUT);
   pinMode(M2_OUT3, INPUT);
   pinMode(M2_OUT4, INPUT);
-	analogWriteResolution(12);
 }
 
 SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,M1_IN5,M1_IN6);
@@ -37,6 +36,7 @@ SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,M2_IN5,M2_IN6);
 //,M1_OUT1,M1_OUT2,M1_OUT3,M1_OUT4
 
 void motor_ready(){
+	analogWriteResolution(12);
 	M1.turnon();
   M2.turnon();
 
