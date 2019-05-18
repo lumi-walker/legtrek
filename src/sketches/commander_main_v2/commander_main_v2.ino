@@ -20,7 +20,7 @@ State requestedState;
 
 
 /*
-   FUNCTION PROTOTYPES
+   UI ISR prototypes 
 */
 
 void ISR_AA();  // ISR for active assist button
@@ -30,6 +30,14 @@ void ISR_TN();  // ISR for turn button
 void ISR_UP();  // ISR for up button
 void ISR_DN();  // ISR for down button
 
+long debounceThresh = 1500;
+// stores previous trigger time for buttons
+long prevAA;
+long prevJS;
+long prevSS;
+long prevUP;
+long prevDN;
+long prevTN;
 
 void setup() {
   // put your setup code here, to run once:
@@ -111,29 +119,22 @@ void ISR_DN() {
     if (currentState == stateSS && vel_sp > minSpeed) {
       vel_sp = vel_sp - dSpeed;
     }
-    else {
-      //if in neither do nothing haha
-    }
   }
 }
 
 void ISR_TN() {
   if (debounceCheck(prevTN)) {
     if (currentState == stateSS) {
-      zero_out_velocity = true;
       currentState = stateTurnSS;
     }
     else if (currentState == stateAA) {
-      zero_out_velocity = true;
       currentState = stateTurnAA;
     }
     else if (currentState == stateTurnSS) {
-      zero_out_velocity = true;
       currentState = stateSS;
       digitalWrite(lTN, LOW);
     }
     else if (currentState == stateTurnAA) {
-      zero_out_velocity = true;
       currentState = stateAA;
       digitalWrite(lTN, LOW);
     }
