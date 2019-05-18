@@ -215,8 +215,7 @@ void UI_setup() {
 void readJoystick() {
   int xRead = -(analogRead(xJS)-512);
   int yRead = (analogRead(yJS)-512);
-  angRead = atan2(yRead,xRead)+PI;
-  if (angRead == 2*PI){angRead == 0;}
+  angRead = atan2(yRead,xRead);
   double xR = (double)xRead;
   double yR = (double)yRead;
   xR = xR/512;
