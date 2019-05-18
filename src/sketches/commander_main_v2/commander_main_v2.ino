@@ -44,12 +44,47 @@ float vel_sp;
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
+
+  //initialize button
+  pinMode(bAA,INPUT_PULLUP);
+  pinMode(lAA,OUTPUT);
+  pinMode(bJS,INPUT_PULLUP);
+  pinMode(lJS,OUTPUT);
+  pinMode(bSS,INPUT_PULLUP);
+  pinMode(lSS,OUTPUT);
+  pinMode(bUP,INPUT_PULLUP);
+  pinMode(bDN,INPUT_PULLUP);
+  pinMode(bTN,INPUT_PULLUP);
+  pinMode(lTN,OUTPUT);
+  
+  //digital pin interrupts
+  attachInterrupt(digitalPinToInterrupt(bAA),ISR_AA,FALLING);
+  attachInterrupt(digitalPinToInterrupt(bJS),ISR_JS,FALLING);
+  attachInterrupt(digitalPinToInterrupt(bSS),ISR_SS,FALLING);
+  attachInterrupt(digitalPinToInterrupt(bUP),ISR_UP,FALLING);
+  attachInterrupt(digitalPinToInterrupt(bDN),ISR_DN,FALLING);
+  attachInterrupt(digitalPinToInterrupt(bTN),ISR_TN,FALLING);
+
+  interrupts();
+  currentState = stateDE;
+
+  // init debounce timers
+  prevAA = millis();
+  prevJS = millis();
+  prevSS = millis();
+  prevUP = millis();
+  prevDN = millis();
+  prevTN = millis();
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  switch(currState) {
+
+  Serial.println(currentState);
+  delay(500);
+  switch(currentState) {
     case stateDE:
     //DEFAULT MODE
       
