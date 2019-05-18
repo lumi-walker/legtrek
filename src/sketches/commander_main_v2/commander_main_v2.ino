@@ -1,7 +1,7 @@
 
 #include "UI_utils.h"
 #include "ui_pin_assignments.h"
-#include "motor_calib_cons.h"
+#include "Motor.h"
 
 // state-machine typedef
 enum {
@@ -13,8 +13,12 @@ enum {
   stateTurnAA, //Turning in AA
   stateTurnSS, //Turning in SS
   stateSit, //Sitting mode
-  stateDEcel  //decel state
+  stateDecel  //decel state
 } typedef State;
+
+// flag that is true when stateDecel is complete
+// move onto requested State
+bool decelComplete;
 
 State currentState;
 State requestedState;
@@ -30,6 +34,7 @@ void ISR_JS();  // ISR for joystick button
 void ISR_TN();  // ISR for turn button
 void ISR_UP();  // ISR for up button
 void ISR_DN();  // ISR for down button
+void ISR_MOTOR_STOPPED(); //  ISR for when the motor stopped
 
 long debounceThresh = 1500;
 // stores previous trigger time for buttons
@@ -39,6 +44,8 @@ long prevSS;
 long prevUP;
 long prevDN;
 long prevTN;
+
+
 
 float vel_sp;
 
@@ -66,6 +73,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(bDN),ISR_DN,FALLING);
   attachInterrupt(digitalPinToInterrupt(bTN),ISR_TN,FALLING);
 
+  // pin which indicates if motor is running or not
+  attachInterrupt(digitalPinToInterrupt(16),ISR_MOTOR_STOPPED,RISING);
+  //attachInterrupt(digitalPinToInterrupt(M2_OUT3),ISR_MOTOR_STOPPED,RISING);
+  
   interrupts();
   currentState = stateDE;
 
@@ -119,6 +130,16 @@ void loop() {
    
       break;
       
+    case stateDecel:
+    //SITTING MODE
+    
+      if(decelComplete) {
+        faststopon_all();
+        currentState = requestedState;
+        decelComplete = false;
+      }
+      break;
+      
     default:
     // DEFAULT MODE
     
@@ -144,7 +165,7 @@ void ISR_AA() {
       currentState = stateAA;
     } else if (currentState == stateAA) {
       // go to decel state first
-      currentState = stateDEcel;
+      currentState = stateDecel;
       // go to default after decel state
       requestedState = stateDE;
       // turn off LED
@@ -159,7 +180,7 @@ void ISR_JS() {
       currentState = stateJS;
     } else if (currentState == stateJS) {
       // go to decel state first
-      currentState = stateDEcel;
+      currentState = stateDecel;
       // go to default after decel state
       requestedState = stateDE;
       // turn off LED
@@ -174,7 +195,7 @@ void ISR_SS() {
       currentState = stateSS;
     } else if (currentState == stateSS) {
       // go to decel state first
-      currentState = stateDEcel;
+      currentState = stateDecel;
       // go to default after decel state
       requestedState = stateDE;
       // turn off LED
@@ -219,4 +240,8 @@ void ISR_TN() {
       //if in neither do nothing haha
     }
   }
+}
+
+void ISR_MOTOR_STOPPED() {
+  decelComplete = true;
 }
