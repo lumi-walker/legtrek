@@ -9,7 +9,7 @@
 
 
 #define M1_OUT1       6
-#define M1_OUT2       34
+#define M1_OUT2       7
 #define M1_OUT3       A0
 #define M1_OUT4       A1
 
@@ -33,4 +33,4 @@
 #define M2_IN6        12
 
 #define M1_MUX        3
-#define M2_MUX        4
+#define M2_MUX        3
