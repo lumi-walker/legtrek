@@ -49,7 +49,46 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  switch(currState) {
+    case stateDE:
+    //DEFAULT MODE
+      
+      break;
+    case stateAA:
+    //ACTIVE ASSIST MODE
+     
+      break;
+    case stateJS:
+    //JOYSTICK MODE
+     
+      break;
+    case stateSS:
+    //SETSPEED MODE
+      
+      break;
+    case stateCE:
+    //CRITICAL ERROR MODE
+      
+      break;
+    case stateTurnAA:
+    //TURNING IN ACTIVE ASSIST
+    
+      break;
+    case stateTurnSS:
+    //TURNING IN SET SPEED
+  
+      break;
+      
+    case stateSit:
+    //SITTING MODE
+   
+      break;
+      
+    default:
+    // DEFAULT MODE
+    
+      break;
+  }
 }
 
 //debounce function - limit button pressing using timer
