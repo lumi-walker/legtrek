@@ -1,6 +1,7 @@
 
 #include "UI_utils.h"
 #include "ui_pin_assignments.h"
+#include "motor_calib_cons.h"
 
 // state-machine typedef
 enum {
@@ -12,7 +13,7 @@ enum {
   stateTurnAA, //Turning in AA
   stateTurnSS, //Turning in SS
   stateSit, //Sitting mode
-  stateDecel  //decel state
+  stateDEcel  //decel state
 } typedef State;
 
 State currentState;
@@ -38,6 +39,8 @@ long prevSS;
 long prevUP;
 long prevDN;
 long prevTN;
+
+float vel_sp;
 
 void setup() {
   // put your setup code here, to run once:
@@ -67,9 +70,9 @@ void ISR_AA() {
       currentState = stateAA;
     } else if (currentState == stateAA) {
       // go to decel state first
-      currentState = stateDecel;
+      currentState = stateDEcel;
       // go to default after decel state
-      requestedState = stateDe;
+      requestedState = stateDE;
       // turn off LED
       digitalWrite(lAA, LOW);
     }
@@ -82,9 +85,9 @@ void ISR_JS() {
       currentState = stateJS;
     } else if (currentState == stateJS) {
       // go to decel state first
-      currentState = stateDecel;
+      currentState = stateDEcel;
       // go to default after decel state
-      requestedState = stateDe;
+      requestedState = stateDE;
       // turn off LED
       digitalWrite(lJS, LOW);
     }
@@ -97,9 +100,9 @@ void ISR_SS() {
       currentState = stateSS;
     } else if (currentState == stateSS) {
       // go to decel state first
-      currentState = stateDecel;
+      currentState = stateDEcel;
       // go to default after decel state
-      requestedState = stateDe;
+      requestedState = stateDE;
       // turn off LED
       digitalWrite(lAA, LOW);
     }
