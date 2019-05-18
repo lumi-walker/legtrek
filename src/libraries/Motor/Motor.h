@@ -30,7 +30,8 @@ void motor_init() {
   pinMode(M2_OUT3, INPUT);
   pinMode(M2_OUT4, INPUT);
 
-	pinMode(MUX1,OUTPUT);
+	pinMode(M1_MUX,OUTPUT);
+	pinMode(M2_MUX,OUTPUT);
 }
 
 SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,M1_IN5,M1_IN6,M1_MUX);

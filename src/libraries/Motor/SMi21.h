@@ -22,9 +22,9 @@ OUT4
 #include "motor_calib_cons.h"
 
 class SMi21 {
-    int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin;
+    int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin,muxPin;
   public:
-    SMi21 (int,int,int,int,int,int);
+    SMi21 (int,int,int,int,int,int,int);
 
     //functions
     void turnon();
