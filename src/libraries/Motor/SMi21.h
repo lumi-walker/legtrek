@@ -4,7 +4,7 @@ SMi21 Motor Configuration using DCmind Soft
 The definitions are inverted due to inverters in circuit
 expert program V101
 IN1        On = 0
-IN2        ----------TBD----------
+IN2        ----------TBD----------calibrate such that 1 is forward and 0 is backward
 IN3        Low State Active; Holding Torque = 150
 IN4        Low State Active
 IN5        PWM; 0%:  ; 100%: ----------TBD----------
@@ -22,9 +22,9 @@ OUT4
 #include "motor_calib_cons.h"
 
 class SMi21 {
-    int onoffPin, direcPin,holdingPin,faststopPin,accPin,velPin,muxPin;
+    int onoffPin, direcPin,holdingPin,faststopPin,accPin,spdPin,muxPin,rspdPin,rdirecPin,isrunningPin,errPin;
   public:
-    SMi21 (int,int,int,int,int,int,int);
+    SMi21 (int,int,int,int,int,int,int,int,int,int,int);
 
     //functions
     void turnon();
@@ -34,20 +34,26 @@ class SMi21 {
     void holdingon();
     void holdingoff();
     void setacc(int);
-    void setvel(float);
+    void setspd(float);
     void setdirect(bool);
+    bool checkrunning();
+    float readspd();
+    bool readdir();
 };
 
 
-SMi21::SMi21 (int in1, int in2,int in3, int in4,int in5, int in6, int mux) {
-  //, int out1, int out2, int out3, int out4
+SMi21::SMi21 (int in1, int in2,int in3, int in4,int in5, int in6, int mux, int out1, int out2, int out3, int out4) {
   onoffPin = in1;
   direcPin = in2;
   holdingPin = in3;
   faststopPin =  in4; //any digital pin
   accPin =  in5;//any analog pin
-  velPin =  in6;
+  spdPin =  in6;
   muxPin = mux;
+  rspdPin = out1;
+  rdirecPin = out2;
+  isrunningPin = out3;
+  errPin = out4;
 }
 
 void SMi21::turnon() {
@@ -69,7 +75,7 @@ void SMi21::holdingon(){
 void SMi21::holdingoff(){
   digitalWrite(holdingPin,LOW);
 }
-void SMi21::setacc(int acc_rpmps){ //vel from UI
+void SMi21::setacc(int acc_rpmps){
   //------------------need to determine acc
   int acc_pwm = 4095-(acc_rpmps-min_acc_rpmps)/(max_acc_rpmps-min_acc_rpmps)*4095;
   if (acc_pwm < 0){
@@ -84,24 +90,28 @@ void SMi21::setacc(int acc_rpmps){ //vel from UI
 }
 
 
-void SMi21::setvel(float vel_mph){ //vel from UI
+void SMi21::setspd(float spd_mph){ //spd from UI
   //--------------------how to define direc
-    if(vel_mph <= minSpeed) {
-      vel_mph = minSpeed;
+    if(spd_mph <= minSpeed) {
+      spd_mph = minSpeed;
       digitalWrite(muxPin,GROUND);
+      if (readspd()<=.1){
+        faststopon();
+      }
     }
+    faststopoff();
     digitalWrite(muxPin,DAC);
-    float maxvel_mph = maxSpeed;
-    int vel_pwm = (vel_mph-minSpeed)/maxvel_mph*4095.0f;
-    if (vel_pwm < 0){
-      analogWrite(velPin,0);
+    float maxspd_mph = maxSpeed;
+    int spd_pwm = (spd_mph-minSpeed)/maxspd_mph*4095.0f;
+    if (spd_pwm < 0){
+      analogWrite(spdPin,0);
     }
-    else if (vel_pwm > 4095){
-      analogWrite(velPin,4095);
+    else if (spd_pwm > 4095){
+      analogWrite(spdPin,4095);
     }
     else{
-      analogWrite(velPin,vel_pwm);
-      Serial.println(vel_pwm);
+      analogWrite(spdPin,spd_pwm);
+      Serial.println(spd_pwm);
     }
 
 }
@@ -109,5 +119,19 @@ void SMi21::setvel(float vel_mph){ //vel from UI
 void SMi21::setdirect(bool direc){
     digitalWrite(direcPin,direc);
 }
+
+bool SMi21::checkrunning(){
+  bool status = digitalRead(isrunningPin);
+  return status;
+}
+float SMi21::readspd(){
+  int readspeed_vol = analogRead(rspdPin);
+  float readspeed_rpm = readspeed_vol*10; //------------calibrate!!!
+  float readspeed_mph = readspeed_rpm/1859;
+}
+bool SMi21::readdir(){
+  int realdir = digitalRead(rdirecPin);
+}
+
 
 #endif
