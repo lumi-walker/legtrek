@@ -9,4 +9,7 @@ int min_acc_rpmps = 483;
 float minSpeed = 0.24; //minimum limit in set speed
 float maxSpeed = 1.2; //maximum limit in set speed
 
+
+bool GROUND = 1;
+bool DAC = 0;
 #endif
