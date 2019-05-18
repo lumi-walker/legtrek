@@ -216,6 +216,7 @@ void readJoystick() {
   int xRead = -(analogRead(xJS)-512);
   int yRead = (analogRead(yJS)-512);
   angRead = atan2(yRead,xRead);
+  if (angRead < 0){angRead == angRead+2*PI;}
   double xR = (double)xRead;
   double yR = (double)yRead;
   xR = xR/512;
