@@ -1,6 +1,7 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
 
+#include "ui_pin_assignments.h"
 /*
 	Contains parameters and functions related to the UI
 */
@@ -15,19 +16,40 @@ double angRead = 0; //angle of pitch
 double rRead =  0; //magnitude of pitch
 double rDeadBand = 0.1;
 double forwardBearing = PI/2;
-double validAngleRange_deg = 10;
-double validAngleRange_rad = validAngleRange_deg * PI / 180.0f;
+double angleBand = 20*PI/180; // 10 degrees to 180
 
 // joystick angular bounds for moving forward
-double validAngleRangeForward_min = forwardBearing - validAngleRange_rad;
-double validAngleRangeForward_max = forwardBearing + validAngleRange_rad;
+double forward_min = forwardBearing - angleBand;
+double forward_max = forwardBearing + angleBand;
 
 // joystick angular bounds for right turn
-double validAngleRangeRTurn_min = 0 - validAngleRange_rad;
-double validAngleRangeRTurn_max = 0 + validAngleRange_rad;
+double rturn_min = 0 - angleBand;
+double rturn_max = 0 + angleBand;
 
 // joystick angular bounds for left turn
-double validAngleRangeLTurn_min = PI - validAngleRange_rad;
-double validAngleRangeLTurn_max = PI + validAngleRange_rad;
+double lturn_min = PI - angleBand;
+double lturn_max = PI + angleBand;
+
+void buttonBlink(int whichLED) {
+  if (millis() % 2000 < 1000) {
+    digitalWrite(whichLED,HIGH);
+  }
+  else {
+    digitalWrite(whichLED,LOW);
+  }
+}
+
+void readJoystick() {
+  int xRead = -(analogRead(xJS)-512);
+  int yRead = (analogRead(yJS)-512);
+  angRead = atan2(yRead,xRead);
+  if (angRead < 0){angRead == angRead+2*PI;}
+  double xR = (double)xRead;
+  double yR = (double)yRead;
+  xR = xR/512;
+  yR = yR/512;
+  rRead = sqrt(pow(xR,2) + pow(yR,2));
+}
+
 
 #endif
