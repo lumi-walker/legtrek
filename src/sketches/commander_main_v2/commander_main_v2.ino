@@ -2,6 +2,8 @@
 #include "UI_utils.h"
 #include "ui_pin_assignments.h"
 #include "Motor.h"
+int CrossPin1 = 2;  // input pin for break beam sensor
+int CrossPin2 = 8;
 
 // state-machine typedef
 enum {
@@ -22,6 +24,17 @@ bool decelComplete = false;
 
 State currentState;
 State requestedState;
+
+
+int isObstacle = HIGH;  // HIGH MEANS NO OBSTACLE
+
+int initflag = 0;
+bool resetSpeed = false;
+long steptime = 800000; //1000000micro sec = 1s .
+long starttime = 0;
+
+bool decellTime = false;
+long startTime_decell = -1;
 
 
 /*
@@ -65,6 +78,9 @@ void setup() {
   pinMode(bDN, INPUT_PULLUP);
   pinMode(bTN, INPUT_PULLUP);
   pinMode(lTN, OUTPUT);
+  pinMode(CrossPin1, INPUT);
+  pinMode(CrossPin2, INPUT);
+
 
   //digital pin interrupts
   attachInterrupt(digitalPinToInterrupt(bAA), ISR_AA, FALLING);
@@ -73,7 +89,8 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(bUP), ISR_UP, FALLING);
   attachInterrupt(digitalPinToInterrupt(bDN), ISR_DN, FALLING);
   attachInterrupt(digitalPinToInterrupt(bTN), ISR_TN, FALLING);
-
+  attachInterrupt(digitalPinToInterrupt(CrossPin1), ISR_AAstep, FALLING);
+  attachInterrupt(digitalPinToInterrupt(CrossPin2), ISR_AAstep, FALLING);
   // REMOVE
   attachInterrupt(digitalPinToInterrupt(16), ISR_MOTOR_STOPPED, FALLING);
   //attachInterrupt(digitalPinToInterrupt(M2_OUT3),ISR_MOTOR_STOPPED,RISING);
@@ -110,7 +127,18 @@ void loop() {
       break;
     case stateAA:
       //ACTIVE ASSIST MODE
-      drive(speed_sp, PI / 2);
+      Serial.println("IR:"+String(digitalRead(CrossPin1))+","+digitalRead(CrossPin2));
+      speed_sp = .6;
+      if (initflag) { //if interrupt happens
+        drive(speed_sp, PI / 2);
+        initflag = 0;
+        Serial.println("start moving");
+        resetSpeed = true;
+      }
+      if (micros() - starttime > steptime && resetSpeed == true) {
+        drive(0, PI / 2);
+        resetSpeed = false;
+      }
       buttonBlink(lAA);
       break;
     case stateJS:
@@ -158,7 +186,7 @@ void loop() {
       break;
     case stateSS:
       //SETSPEED MODE
-      drive(speed_sp, PI / 2);
+      drive(speed_sp, PI/2);
       buttonBlink(lSS);
       break;
     case stateCE:
@@ -376,5 +404,14 @@ void ISR_TN() {
       currentState = stateDecel;
       digitalWrite(lTN, LOW);
     }
+  }
+}
+
+void ISR_AAstep() {
+  if (micros() - starttime > debounceThresh*1000) {
+//    //    if (micros() - starttime > steptime) {
+    initflag = 1;
+//    //    }
+    starttime = micros();//time when a step initiated
   }
 }
