@@ -1,7 +1,7 @@
 #ifndef MOTOR_CALIB_CONS_H
 #define MOTOR_CALIB_CONS_H
 
-float DEFAULT_ACCEL = 5000.0f;
+float DEFAULT_ACCEL = 4205.0f;
 bool FORWARD = true;
 bool REVERSE = false;
 

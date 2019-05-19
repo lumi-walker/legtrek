@@ -93,7 +93,7 @@ void SMi21::setacc(int acc_rpmps){
 
 void SMi21::setspd(float spd_mph){ //spd from UI
   //--------------------how to define direc
-    if(spd_mph <= minSpeed) {
+    if(spd_mph < minSpeed) {
       spd_mph = 0;
       digitalWrite(muxPin,GROUND);
       Serial.println("MUX to ground");

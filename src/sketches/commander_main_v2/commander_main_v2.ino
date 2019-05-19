@@ -34,7 +34,7 @@ void ISR_JS();  // ISR for joystick button
 void ISR_TN();  // ISR for turn button
 void ISR_UP();  // ISR for up button
 void ISR_DN();  // ISR for down button
-long debounceThresh = 1500;
+long debounceThresh = 500;
 
 // stores previous trigger time for buttons
 long prevAA;
@@ -89,10 +89,12 @@ void setup() {
   prevDN = millis();
   prevTN = millis();
 
+  motor_init();
+  motor_ready();
 }
 
 void loop() {
-
+  Serial.println(currentState);
   switch (currentState) {
     case stateDE:
       //DEFAULT MODE
@@ -101,37 +103,26 @@ void loop() {
       speed_sp = 0;
       ang_sp = 0;
       drive(speed_sp, ang_sp);
+      digitalWrite(lAA, LOW);
+      digitalWrite(lJS, LOW);
+      digitalWrite(lSS, LOW);
+      digitalWrite(lTN, LOW);
       break;
     case stateAA:
       //ACTIVE ASSIST MODE
-
+      drive(speed_sp, PI / 2);
+      buttonBlink(lAA);
       break;
     case stateJS:
       //JOYSTICK MODE
-
-      break;
-    case stateSS:
-      //SETSPEED MODE
-      drive(speed_sp, ang_sp);
-      break;
-    case stateCE:
-      //CRITICAL ERROR MODE
-
-      break;
-    case stateTurnAA:
-      //TURNING IN ACTIVE ASSIST
-
-      break;
-    case stateTurnSS:
-      //TURNING IN SET SPEED
       readJoystick();
-      //Serial.println("angle : " + String(angRead) + " || radius " + String(rRead));
+      Serial.println("angle : " + String(angRead) + " || radius " + String(rRead));
       // determine speed
       if (rRead > rDeadBand) {
         speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
 
         // valid radius -> determine direction
-        if (angRead < rturn_max || angRead > rturn_min) {
+        if (angRead < rturn_max  || angRead > rturn_min) {
           // right turn
           Serial.println("RIGHT TURN : " + String(speed_sp));
           ang_sp = 0; // radians
@@ -139,49 +130,144 @@ void loop() {
           // left turn
           Serial.println("LEFT TURN : " + String(speed_sp));
           ang_sp = PI;
+        } else if (angRead >= forward_min && angRead <= forward_max && currentState == stateJS) {
+          ang_sp = PI / 2;
+          Serial.println("FORWARD");
+        } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
+          speed_sp = .3;
+          ang_sp = 3 * PI / 2;
+          Serial.println("BACK!!!");
+        } else {
+          // not valid direction for turnSS -> do not move
+          Serial.println("NO MOVING");
+          ang_sp = 0;
+          speed_sp = 0;
+        }
+      }  else {
+
+        // not valid radius -> do not move
+        speed_sp = 0;
+        Serial.println("Deadband");
+      }
+
+
+      drive(speed_sp, ang_sp);
+
+      buttonBlink(lJS);
+
+      break;
+    case stateSS:
+      //SETSPEED MODE
+      drive(speed_sp, PI / 2);
+      buttonBlink(lSS);
+      break;
+    case stateCE:
+      //CRITICAL ERROR MODE
+      drive(0, PI / 2);
+      break;
+    case stateTurnAA:
+      //TURNING IN ACTIVE ASSIST
+      buttonBlink(lTN);
+      buttonBlink(lAA);
+      readJoystick();
+      Serial.println("angle : " + String(angRead) + " || radius " + String(rRead));
+      // determine speed
+      if (rRead > rDeadBand) {
+        speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
+
+        // valid radius -> determine direction
+        if (angRead < rturn_max  || angRead > rturn_min) {
+          // right turn
+          Serial.println("RIGHT TURN : " + String(speed_sp));
+          ang_sp = 0; // radians
+        } else if (angRead < lturn_max && angRead > lturn_min) {
+          // left turn
+          Serial.println("LEFT TURN : " + String(speed_sp));
+          ang_sp = PI;
+        } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
+          speed_sp = .3;
+          ang_sp = 3 * PI / 2;
+          Serial.println("BACK!!!");
         } else {
           // not valid direction for turnSS -> do not move
           Serial.println("NO TURN : ");
           ang_sp = 0;
           speed_sp = 0;
         }
-      } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
-        speed_sp = .3;
-        ang_sp = 3 * PI / 2;
-        Serial.println("BACK!!!");
-      } else {
+      }  else {
 
         // not valid radius -> do not move
         speed_sp = 0;
         Serial.println("Deadband");
       }
+
+
+      drive(speed_sp, ang_sp);
+
+      break;
+    case stateTurnSS:
+      //TURNING IN SET SPEED
+      buttonBlink(lTN);
+      buttonBlink(lSS);
+      readJoystick();
+      Serial.println("angle : " + String(angRead) + " || radius " + String(rRead));
+      // determine speed
+      if (rRead > rDeadBand) {
+        speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
+
+        // valid radius -> determine direction
+        if (angRead < rturn_max  || angRead > rturn_min) {
+          // right turn
+          Serial.println("RIGHT TURN : " + String(speed_sp));
+          ang_sp = 0; // radians
+        } else if (angRead < lturn_max && angRead > lturn_min) {
+          // left turn
+          Serial.println("LEFT TURN : " + String(speed_sp));
+          ang_sp = PI;
+        } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
+          speed_sp = .3;
+          ang_sp = 3 * PI / 2;
+          Serial.println("BACK!!!");
+        } else {
+          // not valid direction for turnSS -> do not move
+          Serial.println("NO TURN : ");
+          ang_sp = 0;
+          speed_sp = 0;
+        }
+      }  else {
+
+        // not valid radius -> do not move
+        speed_sp = 0;
+        Serial.println("Deadband");
+      }
+
+
+      drive(speed_sp, ang_sp);
+
+      break;
+
+    case stateSit:
+      //SITTING MODE
+
+      break;
+
+    case stateDecel:
+      // DECEL MODE
+      speed_sp = 0;
+      drive(speed_sp, ang_sp);
+      Serial.println("motor status" + String(isMotorRunning()));
+      if (isMotorRunning() == false) {
+        currentState = requestedState;
+      }
+
+      break;
   }
-
-  drive(speed_sp, ang_sp);
-
-  break;
-
-case stateSit:
-  //SITTING MODE
-
-  break;
-
-case stateDecel:
-  // DECEL MODE
-  speed_sp = 0;
-  drive(speed_sp, ang_sp);
-
-  if (isMotorRunning() == false) {
-    currentState = requestedState;
-  }
-
-  break;
-
-default:
-  // DEFAULT MODE
-  break;
+  //
+  //default:
+  //  // DEFAULT MODE
+  //  break;
 }
-}
+
 
 //debounce function - limit button pressing using timer
 bool debounceCheck(long& prevTime) {
@@ -196,10 +282,13 @@ bool debounceCheck(long& prevTime) {
 
 
 void ISR_AA() {
+
   if (debounceCheck(prevAA)) {
+
     if (currentState == stateDE) {
       currentState = stateAA;
-    } else if (currentState == stateAA) {
+    }
+    else if (currentState == stateAA) {
       // go to decel state first
       currentState = stateDecel;
       // go to default after decel state
@@ -208,6 +297,7 @@ void ISR_AA() {
       digitalWrite(lAA, LOW);
     }
   }
+
 }
 
 void ISR_JS() {
@@ -235,7 +325,7 @@ void ISR_SS() {
       // go to default after decel state
       requestedState = stateDE;
       // turn off LED
-      digitalWrite(lAA, LOW);
+      digitalWrite(lSS, LOW);
     }
   }
 }
@@ -258,7 +348,7 @@ void ISR_UP() {
 
 void ISR_DN() {
   if (debounceCheck(prevDN)) {
-    if (currentState == stateSS && speed_sp > minSpeed) {
+    if (currentState == stateSS && speed_sp >= minSpeed) {
       speed_sp -= dSpeed;
       if (speed_sp < minSpeed) speed_sp = 0;
     }
@@ -266,6 +356,7 @@ void ISR_DN() {
 }
 
 void ISR_TN() {
+
   if (debounceCheck(prevTN)) {
     if (currentState == stateSS) {
       requestedState = stateTurnSS;

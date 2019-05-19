@@ -23,8 +23,8 @@ double forward_min = forwardBearing - angleBand;
 double forward_max = forwardBearing + angleBand;
 
 // joystick angular bounds for right turn
-double rturn_min = 0 - angleBand;
-double rturn_max = 2*PI + angleBand;
+double rturn_max = 0 + angleBand;
+double rturn_min = 2*PI - angleBand;
 
 // joystick angular bounds for left turn
 double lturn_min = PI - angleBand;
@@ -47,7 +47,7 @@ void readJoystick() {
   int xRead = -(analogRead(xJS)-512);
   int yRead = (analogRead(yJS)-512);
   angRead = atan2(yRead,xRead);
-  if (angRead < 0){angRead == angRead+2*PI;}
+  if (angRead < 0){angRead = angRead+2*PI;}
   double xR = (double)xRead;
   double yR = (double)yRead;
   xR = xR/512;

@@ -19,10 +19,9 @@ checkinput();
 
 drive(speed_sp,ang_sp);
 bool motorstatus1 = M1.checkrunning();
-bool motordirection1 = M1.readdir();
+
 bool motorstatus2 = M2.checkrunning();
-bool motordirection2 = M2.readdir();
-Serial.println("direct"+String(motordirection1)+","+String(motordirection1));
+
 Serial.println("status"+String(motorstatus1)+","+String(motorstatus2));
 
 ////direction change
