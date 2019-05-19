@@ -16,7 +16,7 @@ double angRead = 0; //angle of pitch
 double rRead =  0; //magnitude of pitch
 double rDeadBand = 0.1;
 double forwardBearing = PI/2;
-double angleBand = 20*PI/180; // 10 degrees to 180
+double angleBand = 15*PI/180; // 10 degrees to 180
 
 // joystick angular bounds for moving forward
 double forward_min = forwardBearing - angleBand;
@@ -24,11 +24,15 @@ double forward_max = forwardBearing + angleBand;
 
 // joystick angular bounds for right turn
 double rturn_min = 0 - angleBand;
-double rturn_max = 0 + angleBand;
+double rturn_max = 2*PI + angleBand;
 
 // joystick angular bounds for left turn
 double lturn_min = PI - angleBand;
 double lturn_max = PI + angleBand;
+
+//joystick angular bounds for backward
+double back_min = 3*PI/2 - angleBand;
+double back_max = 3*PI/2  + angleBand;
 
 void buttonBlink(int whichLED) {
   if (millis() % 2000 < 1000) {

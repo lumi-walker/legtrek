@@ -29,8 +29,7 @@
 
 #define M1_IN5        DAC1
 #define M1_IN6        DAC0
-#define M2_IN5        11
-#define M2_IN6        12
+#define M2_IN5        DAC1//11
+#define M2_IN6        DAC0//12
 
-#define M1_MUX        3
-#define M2_MUX        3
+#define MUX        3

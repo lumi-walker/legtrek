@@ -1,35 +1,39 @@
+#include "UI_utils.h"
+#include "ui_pin_assignments.h"
 #include "Motor.h"
-int accset = 4000;
-int velset = 400;
+//send input to M2 and reading outputs from M2
+float speed_sp = 1;
+double ang_sp = PI/2;
 String readString;
+
 void setup() {
   // put your setup code here, to run once:
-  analogWriteResolution(12);
-  motor_init();//pinmode
-  motor_ready();//on,holding,faststop
-  M1.setdirect(0);
-  M2.setdirect(1);
-  Serial.begin(9600);
-  while (! Serial);
-  Serial.println("ready ");
+Serial.begin(9600);
+motor_init();
+motor_ready();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 checkinput();
-  analogWrite(M1_IN5,accset);
-analogWrite(M1_IN6,velset);
-//if (millis() < 5000){
-//  analogWrite(M1_IN5,255);
-//analogWrite(M1_IN6,0);
-//}
-//else if (millis() < 10000){
-//analogWrite(M1_IN5,255);
-//analogWrite(M1_IN6,100);
-//}
 
+drive(speed_sp,ang_sp);
+bool motorstatus1 = M1.checkrunning();
+bool motordirection1 = M1.readdir();
+bool motorstatus2 = M2.checkrunning();
+bool motordirection2 = M2.readdir();
+Serial.println("direct"+String(motordirection1)+","+String(motordirection1));
+Serial.println("status"+String(motorstatus1)+","+String(motorstatus2));
+
+////direction change
+//drive(speed_sp,PI/2);
+//delay(2000);
+//drive(speed_sp,3*PI/2);
+//delay(2000);
 }
+
 void checkinput() {
+  
   // take value from serial monitor and determine states accordingly
   // !!!all input from serial monitor must start with a number and end with a comma!!!
   if (Serial.available() > 0) { //if there's a input from serial monitor
@@ -41,19 +45,15 @@ void checkinput() {
 
         int n = readString.toInt();  //convert readString into a number
 
-        if (readString.indexOf("a") > 0) {
-
-          accset = n;
-          Serial.println("acc = " + String(accset));
+        
+        if (readString.indexOf("v") > 0) {
+          speed_sp = n/10 ;
+          Serial.println("vel = " + String(speed_sp));
         }
-        else if (readString.indexOf("v") > 0) {
-          velset = n ;
-          Serial.println("vel = " + String(velset));
-        }
-        else if (readString.indexOf("fs") > 0) {
+        else if (readString.indexOf("s") > 0) {
           faststopon_all();
         }
-        else if (readString.indexOf("fso") > 0) {
+        else if (readString.indexOf("o") > 0) {
           faststopoff_all();
         }
         else {
@@ -70,4 +70,3 @@ void checkinput() {
   }
 
 }
-

@@ -92,14 +92,15 @@ void setup() {
 }
 
 void loop() {
-  
+
   switch (currentState) {
     case stateDE:
       //DEFAULT MODE
       // stop
+      //all led LOW
       speed_sp = 0;
       ang_sp = 0;
-      drive(speed_sp,ang_sp);
+      drive(speed_sp, ang_sp);
       break;
     case stateAA:
       //ACTIVE ASSIST MODE
@@ -111,7 +112,7 @@ void loop() {
       break;
     case stateSS:
       //SETSPEED MODE
-
+      drive(speed_sp, ang_sp);
       break;
     case stateCE:
       //CRITICAL ERROR MODE
@@ -130,7 +131,7 @@ void loop() {
         speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
 
         // valid radius -> determine direction
-        if (angRead < rturn_max && angRead > rturn_min) {
+        if (angRead < rturn_max || angRead > rturn_min) {
           // right turn
           Serial.println("RIGHT TURN : " + String(speed_sp));
           ang_sp = 0; // radians
@@ -144,35 +145,42 @@ void loop() {
           ang_sp = 0;
           speed_sp = 0;
         }
+      } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
+        speed_sp = .3;
+        ang_sp = 3 * PI / 2;
+        Serial.println("BACK!!!");
       } else {
+
         // not valid radius -> do not move
         speed_sp = 0;
+        Serial.println("Deadband");
       }
-
-      drive(speed_sp,ang_sp);
-
-      break;
-
-    case stateSit:
-      //SITTING MODE
-
-      break;
-
-    case stateDecel:
-      // DECEL MODE
-      speed_sp = 0;
-      drive(speed_sp,ang_sp);
-
-      if(isMotorRunning()) {
-        currentState = requestedState;
-      }
-
-      break;
-
-    default:
-      // DEFAULT MODE
-      break;
   }
+
+  drive(speed_sp, ang_sp);
+
+  break;
+
+case stateSit:
+  //SITTING MODE
+
+  break;
+
+case stateDecel:
+  // DECEL MODE
+  speed_sp = 0;
+  drive(speed_sp, ang_sp);
+
+  if (isMotorRunning() == false) {
+    currentState = requestedState;
+  }
+
+  break;
+
+default:
+  // DEFAULT MODE
+  break;
+}
 }
 
 //debounce function - limit button pressing using timer

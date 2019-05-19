@@ -3,6 +3,7 @@
 SMi21 Motor Configuration using DCmind Soft
 The definitions are inverted due to inverters in circuit
 expert program V101
+Type3 OUTPUT
 IN1        On = 0
 IN2        ----------TBD----------calibrate such that 1 is forward and 0 is backward
 IN3        Low State Active; Holding Torque = 150
@@ -93,16 +94,18 @@ void SMi21::setacc(int acc_rpmps){
 void SMi21::setspd(float spd_mph){ //spd from UI
   //--------------------how to define direc
     if(spd_mph <= minSpeed) {
-      spd_mph = minSpeed;
+      spd_mph = 0;
       digitalWrite(muxPin,GROUND);
-      if (readspd()<=.1){
-        faststopon();
-      }
-    }
-    faststopoff();
+      Serial.println("MUX to ground");
+      // if (checkrunning()!=R_RUN){//(checkrunning()!=R_RUN) or use realspeed
+      //   faststopon();
+      // }
+    }else{
+    // faststopoff();
     digitalWrite(muxPin,DAC);
+    Serial.println("MUX to DAC");
     float maxspd_mph = maxSpeed;
-    int spd_pwm = (spd_mph-minSpeed)/maxspd_mph*4095.0f;
+    int spd_pwm = (spd_mph-minSpeed)/(maxspd_mph-minSpeed)*4095.0f;
     if (spd_pwm < 0){
       analogWrite(spdPin,0);
     }
@@ -111,9 +114,9 @@ void SMi21::setspd(float spd_mph){ //spd from UI
     }
     else{
       analogWrite(spdPin,spd_pwm);
-      Serial.println(spd_pwm);
+      Serial.println("DAC pwm is" + String(spd_pwm));
     }
-
+}
 }
 
 void SMi21::setdirect(bool direc){
@@ -122,16 +125,26 @@ void SMi21::setdirect(bool direc){
 
 bool SMi21::checkrunning(){
   bool status = digitalRead(isrunningPin);
+  if (status == 0){
+    Serial.println("real running");
+  }else{
+    Serial.println("real stopped");
+  }
   return status;
 }
-float SMi21::readspd(){
-  int readspeed_vol = analogRead(rspdPin);
-  float readspeed_rpm = readspeed_vol*10; //------------calibrate!!!
-  float readspeed_mph = readspeed_rpm/1859;
-}
-bool SMi21::readdir(){
-  int realdir = digitalRead(rdirecPin);
-}
+// float SMi21::readspd(){
+//   int readspeed_vol = analogRead(rspdPin);
+//   float readspeed_rpm = readspeed_vol*10; //------------calibrate!!!
+//   float readspeed_mph = readspeed_rpm/1859;
+//   return readspeed_mph;
+//   Serial.println("real speed is" + String(readspeed_vol));
+// }
+// bool SMi21::readdir(){
+//   int realdir = digitalRead(rdirecPin);
+//   Serial.println("real direction is" + String(realdir));
+//   return realdir;
+//
+// }
 
 
 #endif

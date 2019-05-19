@@ -5,6 +5,11 @@
 #include "motor_pin_assignments.h"
 
 
+bool realMotorDirection(int);
+
+SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,M1_IN5,M1_IN6,MUX,M1_OUT1,M1_OUT2,M1_OUT3,M1_OUT4);
+SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,M2_IN5,M2_IN6,MUX,M2_OUT1,M2_OUT2,M2_OUT3,M2_OUT4);
+
 void motor_init() {
 	pinMode(M1_IN1, OUTPUT);
 	pinMode(M1_IN2, OUTPUT);
@@ -30,12 +35,9 @@ void motor_init() {
   pinMode(M2_OUT3, INPUT);
   pinMode(M2_OUT4, INPUT);
 
-	pinMode(M1_MUX,OUTPUT);
-	pinMode(M2_MUX,OUTPUT);
-}
+	pinMode(MUX,OUTPUT);
 
-SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,M1_IN5,M1_IN6,M1_MUX,M1_OUT1,M1_OUT2,M1_OUT3,M1_OUT4);
-SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,M2_IN5,M2_IN6,M2_MUX,M2_OUT1,M2_OUT2,M2_OUT3,M2_OUT4);
+}
 
 void motor_ready(){
 	analogWriteResolution(12);
@@ -43,12 +45,13 @@ void motor_ready(){
   M2.turnon();
 
   M1.faststopoff();
-  M1.holdingoff();
+	M2.faststopoff();
 
-  M2.faststopoff();
+  M1.holdingoff();
   M2.holdingoff();
 
 	M1.setacc(DEFAULT_ACCEL);
+	M2.setacc(DEFAULT_ACCEL);
 }
 
 void drive(float speed, double angle){
@@ -57,33 +60,38 @@ void drive(float speed, double angle){
   M2.setspd(speed);
 	bool M1direct=FORWARD;
 	bool M2direct=FORWARD;
-
+  float slowerspeed;
 	if (angle == 0){//right turn in place
-		bool M1direct=FORWARD;
-		bool M2direct=REVERSE;
-
+		M1direct=FORWARD;
+		M2direct=REVERSE;
 	}else if(angle == PI){//left turn in place
-		bool M1direct=REVERSE;
-		bool M2direct=FORWARD;
+		M1direct=REVERSE;
+		M2direct=FORWARD;
+	}else if(angle == 3*PI/2){//backward
+		M1direct=REVERSE;
+		M2direct=REVERSE;
+	}else if(angle == PI/2){//backward
+		M1direct=FORWARD;
+		M2direct=FORWARD;
 	}else{//turn in arc
 		if(angle <= 75*PI/180){
 			M1.setspd(speed);
-			float slowerspeed = (angle-(15*PI/180))/(60*PI/180)*speed; //linear mapping
+			slowerspeed = (angle-(15*PI/180))/(60*PI/180)*speed; //linear mapping
 			M2.setspd(slowerspeed);
-		}else{
+		}else if(angle >= 105*PI/180){
 			M2.setspd(speed);
-			float slowerspeed = speed - (angle-(105*PI/180))/(60*PI/180)*speed; //linear mapping
+			slowerspeed = speed - (angle-(105*PI/180))/(60*PI/180)*speed; //linear mapping
 			M1.setspd(slowerspeed);
 		}
 	}
 	M1.setdirect(M1direct);
 	M2.setdirect(M2direct);
 	//make sure to check with hardware that readdir works when stopped/edge casess
-	if (M1.readdir()!=M1direct || M2.readdir()!=M2direct){
-		M1.setspd(0);
-	  M2.setspd(0);
-	}
-
+	// if (realMotorDirection(1)!=M1direct || realMotorDirection(2)!=M2direct){
+	// 	M1.setspd(0);
+	//   M2.setspd(0);
+	// }
+Serial.println(speed);
 }
 void setacc_all(int acc){
 	M1.setacc(acc);
@@ -102,11 +110,17 @@ void faststopoff_all(){
 
 bool isMotorRunning(){
 	bool running = true;
-	if (M1.checkrunning()==false && M2.checkrunning()==false){
-		bool running = false;
+	if (M1.checkrunning()!=R_RUN && M2.checkrunning()!=R_RUN){
+		running = false;
 	}
 	return running;
 }
 
-
+// bool realMotorDirection(int motorNo){
+// 	bool direct = !M1.readdir();//add to
+// 	if (motorNo == 2){
+// 		direct = M2.readdir(); //add to
+// 	}
+// 	return direct;
+// }
 #endif
