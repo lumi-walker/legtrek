@@ -4,11 +4,11 @@
 #include "Motor.h"
 int CrossPin1 = 2;  // input pin for break beam sensor
 int CrossPin2 = 8;
-<<<<<<< HEAD
-String readString;
-=======
 
->>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
+String readString;
+
+
+
 // state-machine typedef
 enum {
   stateDE, // 0 Default mode
@@ -34,12 +34,12 @@ int isObstacle = HIGH;  // HIGH MEANS NO OBSTACLE
 
 int initflag = 0;
 bool resetSpeed = false;
-<<<<<<< HEAD
+
 long steptime = 600000; //1000000micro sec = 1s .
 long dsteptime = 50000;
-=======
-long steptime = 800000; //1000000micro sec = 1s .
->>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
+
+
+
 long starttime = 0;
 
 bool decellTime = false;
@@ -138,11 +138,11 @@ void loop() {
     case stateAA:
       //ACTIVE ASSIST MODE
       Serial.println("IR:"+String(digitalRead(CrossPin1))+","+digitalRead(CrossPin2));
-<<<<<<< HEAD
+
       speed_sp = .45;
-=======
-      speed_sp = .6;
->>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
+
+
+
       if (initflag) { //if interrupt happens
         drive(speed_sp, PI / 2);
         initflag = 0;
@@ -450,7 +450,7 @@ void ISR_AAstep() {
     starttime = micros();//time when a step initiated
   }
 }
-<<<<<<< HEAD
+
 
 void checkinput() {
   // take value from serial monitor and determine states accordingly
@@ -488,5 +488,4 @@ void checkinput() {
   }
 
 }
-=======
->>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
+
