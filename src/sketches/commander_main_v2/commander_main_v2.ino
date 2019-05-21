@@ -4,7 +4,11 @@
 #include "Motor.h"
 int CrossPin1 = 2;  // input pin for break beam sensor
 int CrossPin2 = 8;
+<<<<<<< HEAD
+String readString;
+=======
 
+>>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
 // state-machine typedef
 enum {
   stateDE, // 0 Default mode
@@ -30,7 +34,12 @@ int isObstacle = HIGH;  // HIGH MEANS NO OBSTACLE
 
 int initflag = 0;
 bool resetSpeed = false;
+<<<<<<< HEAD
+long steptime = 600000; //1000000micro sec = 1s .
+long dsteptime = 50000;
+=======
 long steptime = 800000; //1000000micro sec = 1s .
+>>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
 long starttime = 0;
 
 bool decellTime = false;
@@ -112,6 +121,7 @@ void setup() {
 
 void loop() {
   Serial.println(currentState);
+  checkinput();
   switch (currentState) {
     case stateDE:
       //DEFAULT MODE
@@ -128,7 +138,11 @@ void loop() {
     case stateAA:
       //ACTIVE ASSIST MODE
       Serial.println("IR:"+String(digitalRead(CrossPin1))+","+digitalRead(CrossPin2));
+<<<<<<< HEAD
+      speed_sp = .45;
+=======
       speed_sp = .6;
+>>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
       if (initflag) { //if interrupt happens
         drive(speed_sp, PI / 2);
         initflag = 0;
@@ -371,6 +385,27 @@ void ISR_UP() {
         }
       }
     }
+//    else if (currentState == stateAA && speed_sp < 1.0f) {
+//      if (speed_sp == 0) {
+//        speed_sp = minSpeed;
+//      } else {
+//
+//        speed_sp = speed_sp + dSpeed;
+//        if (speed_sp > 1.0f) {
+//          speed_sp = 1.0f;
+//        }
+//      }
+//    }else if (currentState == stateTurnAA ) {
+//      if (speed_sp == 0) {
+//        speed_sp = minSpeed;
+//      } else {
+//
+//        steptime = steptime + dsteptime;
+//        if (steptime > 12000000) {
+//          steptime > 12000000;
+//        }
+//      }
+//    }
   }
 }
 
@@ -415,3 +450,43 @@ void ISR_AAstep() {
     starttime = micros();//time when a step initiated
   }
 }
+<<<<<<< HEAD
+
+void checkinput() {
+  // take value from serial monitor and determine states accordingly
+  // !!!all input from serial monitor must start with a number and end with a comma!!!
+  if (Serial.available() > 0) { //if there's a input from serial monitor
+    char c = Serial.read();  //gets one byte from serial buffer
+
+    if (c == ',') {
+      if (readString.length() > 1) {
+        Serial.println(readString); //prints string to serial port out
+
+        int n = readString.toInt();  //convert readString into a number
+
+        if (readString.indexOf("t") > 0) {
+
+          steptime = n*1000;
+          Serial.println("steptime = " + String(steptime/1000) + "ms");
+        }
+        else if (readString.indexOf("v") > 0) {
+          speed_sp = float(n) / 10.0f;
+          Serial.println("vel = " + String(speed_sp));
+        }
+        
+        else {
+          Serial.println("ERROR! Follow input Format!!! Previous input cleared!");
+          readString = ""; //clears variable for new input
+        }
+        readString = ""; //clears variable for new input
+      }
+    }
+    else {
+      readString += c; //makes the string readString
+    }
+
+  }
+
+}
+=======
+>>>>>>> 07b6861edd1b4c2eb26d9a73f3bd83d30d7ef3d4
