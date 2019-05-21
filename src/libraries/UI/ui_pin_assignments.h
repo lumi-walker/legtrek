@@ -26,6 +26,5 @@
 #define TEENSY_PIN 18 //Teensy pin
 #define PROX_PIN 22 //Proximity Sensor Pin
 
-
-// active assist IR pin
-int IRpin = 53;
+// int CrossPin1 = 2;  // input pin for break beam sensor
+// int CrossPin2 = 8;
