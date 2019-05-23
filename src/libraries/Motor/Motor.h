@@ -86,11 +86,7 @@ void drive(float speed, double angle){
 	}
 	M1.setdirect(M1direct);
 	M2.setdirect(M2direct);
-	//make sure to check with hardware that readdir works when stopped/edge casess
-	// if (realMotorDirection(1)!=M1direct || realMotorDirection(2)!=M2direct){
-	// 	M1.setspd(0);
-	//   M2.setspd(0);
-	// }
+
 Serial.println("speed setpoint is:" + String(speed));
 }
 void setacc_all(int acc){
@@ -116,11 +112,5 @@ bool isMotorRunning(){
 	return running;
 }
 
-// bool realMotorDirection(int motorNo){
-// 	bool direct = !M1.readdir();//add to
-// 	if (motorNo == 2){
-// 		direct = M2.readdir(); //add to
-// 	}
-// 	return direct;
-// }
+
 #endif

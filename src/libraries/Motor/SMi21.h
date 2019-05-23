@@ -139,12 +139,7 @@ bool SMi21::checkrunning(){
 //   return readspeed_mph;
 //   Serial.println("real speed is" + String(readspeed_vol));
 // }
-// bool SMi21::readdir(){
-//   int realdir = digitalRead(rdirecPin);
-//   Serial.println("real direction is" + String(realdir));
-//   return realdir;
-//
-// }
+
 
 
 #endif
