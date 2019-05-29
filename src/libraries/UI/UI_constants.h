@@ -1,3 +1,6 @@
+#include "SPI.h"
+#include "Adafruit_GFX.h"
+#include "Adafruit_ILI9341.h"
 //constants
 
 //state constants
@@ -12,6 +15,8 @@ enum {
   stateSit, //Sitting mode
   stateDecel //deceling mode
 } typedef State;
+
+int batterylvl = 100;
 
 //joystick state constants
 bool stateRTN = 0; //Turn mode
@@ -28,7 +33,14 @@ enum {
 js prevTurn = jsBrake; //intialize prevTurn to 0
 js currTurn = jsBrake; //current turn mode
 
-
+//Error logic variables
+//bool is_FAULTY_CURRENT_SENSOR = 0;
+bool is_MOTOR_ERROR = 0;
+bool is_FAULTY_TEMP_SENSOR = 0;
+bool is_OVER_TEMP = 0;
+//bool is_OVER_CURRENT = 0;
+bool is_OVER_VOLT = 0;
+bool is_LOW_VOLT = 0;
 
 //universal LCD variables
 //Run the LCD software from Adafruit
@@ -42,6 +54,11 @@ uint16_t  dy = tft.height()/6;
 
 //debounce for buttons
 long debounceThresh = 500; //threshold in milliseconds
+
+//booting stages
+bool isBooting = 1;
+bool isBootUp = 0;
+bool isBootDown = 0;
 
 //-----------------------------------------------------------------------------
 

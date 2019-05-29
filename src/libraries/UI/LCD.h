@@ -1,6 +1,6 @@
 //LCD Screen Functions and Classes
 
-#include "global_include.h"
+#include "UI_constants.h"
 
 /*GENERAL STRUCTURE OF WRITING ONTO LCD
 
@@ -98,8 +98,8 @@ void LCD::loadingScreen() {
     tft.fillCircle(5.5*dx,dy*4.5,10,ILI9341_WHITE);
     delay(200);
     //in real code, take out (or add) if condition, set digital read to ping pin
-    if (millis()>1000) {
-      isBootUp = !digitalRead(24);
+    if (millis()>2000) {
+      isBootUp = digitalRead(24);
     }
   }
 }
@@ -107,19 +107,20 @@ void LCD::loadingScreen() {
 
 //After boot-up, make screen where some things are permanent
 void LCD::startScreen() {
-  tft.fillRect(0,0,xmax,3*dy,ILI9341_CYAN);
+  tft.fillRect(0,0,xmax,3*dy,ILI9341_BLACK);
+  //tft.drawRect(0,0,xmax,3*dy,ILI9341_WHITE);
   tft.fillRect(0,3*dy,xmax,3*dy,ILI9341_BLUE);
 
   uint16_t xSpeed = 60;
   uint16_t ySpeed = 70;
   tft.setCursor(xSpeed,ySpeed);
-  tft.setTextColor(ILI9341_BLACK); tft.setTextSize(3);
+  tft.setTextColor(ILI9341_WHITE); tft.setTextSize(3);
   tft.println("SPEED");
 
   uint16_t xMPH = 4*dx-10;
   uint16_t yMPH = 2*dy+5;
   tft.setCursor(xMPH,yMPH);
-  tft.setTextColor(ILI9341_BLACK); tft.setTextSize(3);
+  tft.setTextColor(ILI9341_WHITE); tft.setTextSize(3);
   tft.println("mph");
 
   tft.setCursor(70,3.2*dy+10);
@@ -129,7 +130,7 @@ void LCD::startScreen() {
   //write variable text using global variables
   writeBatteryLevel(batterylvl); //read from voltage
   writeErrorPanel();
-  writeSpeed(vel_sp); //should be 0
+  writeSpeed(0.00); //should be 0
   writeMode(stateDE); //should be default
   writeTurn(currTurn); //should be braked
 }
@@ -151,13 +152,13 @@ void LCD::writeBatteryLevel(int voltage) {
     tft.fillRect(2*bdx,0,bdx,dy, ILI9341_GREEN);
     tft.drawRect(2*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 60) {
-   // tft.fillRect(3*bdx,0,bdx,dy, ILI9341_ORANGE);
+    tft.fillRect(3*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(3*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 50) {
-   // tft.fillRect(4*bdx,0,bdx,dy, ILI9341_ORANGE);
+    tft.fillRect(4*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(4*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 40) {
-   // tft.fillRect(5*bdx,0,bdx,dy, ILI9341_ORANGE);
+    tft.fillRect(5*bdx,0,bdx,dy, ILI9341_ORANGE);
     tft.drawRect(5*bdx,0,bdx,dy, ILI9341_BLACK);}
   if (voltage >= 30) {
     tft.fillRect(6*bdx,0,bdx,dy, ILI9341_RED);
@@ -170,15 +171,18 @@ void LCD::writeBatteryLevel(int voltage) {
     tft.drawRect(8*bdx,0,bdx,dy, ILI9341_BLACK);}
   //if within last 10%, flash the last box to indicate low levels
   if (voltage >= 0) {
-      if ((millis() % 2000 <= 1000) && low_batt) {
-        tft.fillRect(9*bdx,0,bdx,dy, ILI9341_CYAN);
-        low_batt == 0;
-      }
-      else {
-        tft.fillRect(9*bdx,0,bdx,dy, ILI9341_BLACK);
+      //if ((millis() % 2000 <= 1000) && low_batt) {
+        tft.fillRect(9*bdx,0,bdx,dy, ILI9341_WHITE);
+        tft.drawRect(9*bdx,0,bdx,dy, ILI9341_BLACK);
+    //    low_batt == 0;
+    //  }
+    /*
+      else if (millis() % 2000 > 1000 && !low_batt) {
+        tft.fillRect(9*bdx,0,bdx,dy, ILI9341_WHITE);
         tft.drawRect(9*bdx,0,bdx,dy, ILI9341_BLACK);
         low_batt == 1;
       }
+      else {}*/
     }
   //outline the battery box
   tft.drawRect(0,0,10*bdx,dy,ILI9341_BLACK);
@@ -189,47 +193,48 @@ void LCD::writeBatteryLevel(int voltage) {
 void LCD::writeErrorPanel() {
   //if detect motor error change box to red, otherwise remain green
   uint16_t x0 = 6;
+  uint16_t dyE = ymax/5;
   uint16_t xoff = 5;
   if(is_MOTOR_ERROR) { //CHECK WITH MIN LATER
-    tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dy, ILI9341_RED);
+    tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
-  tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dy, ILI9341_GREEN);
+  tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dyE, ILI9341_GREEN);
   }
   //if TEENSY detects bad temp sensor change box to red, otherwise remain green
   if(is_FAULTY_TEMP_SENSOR) {
-    tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dy, ILI9341_RED);
+    tft.fillRect(x0*dx-xoff,dyE,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
-    tft.fillRect(x0*dx-xoff,dy,dx+2*xoff,dy, ILI9341_GREEN);
+    tft.fillRect(x0*dx-xoff,dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
   //if detect over temperature, same action as above
   if(is_OVER_TEMP) {
-    tft.fillRect(x0*dx-xoff,2*dy,dx+2*xoff,dy, ILI9341_RED);
+    tft.fillRect(x0*dx-xoff,2*dyE,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
-    tft.fillRect(x0*dx-xoff,2*dy,dx+2*xoff,dy, ILI9341_GREEN);
+    tft.fillRect(x0*dx-xoff,2*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
   //if detect over voltage, same action as above
   if(is_OVER_VOLT) {
-    tft.fillRect(x0*dx-xoff,4*dy,dx+2*xoff,dy, ILI9341_RED);
+    tft.fillRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
-    tft.fillRect(x0*dx-xoff,4*dy,dx+2*xoff,dy, ILI9341_GREEN);
+    tft.fillRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
   //if detect low voltage(low battery), same action as above
   if(is_LOW_VOLT) {
-    tft.fillRect(x0*dx-xoff,5*dy,dx+2*xoff,dy, ILI9341_RED);
+    tft.fillRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
-    tft.fillRect(x0*dx-xoff,5*dy,dx+2*xoff,dy, ILI9341_GREEN);
+    tft.fillRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
-  tft.drawRect(x0*dx-xoff,0,dx+2*xoff,dy,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,dy,dx+2*xoff,dy,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,2*dy,dx+2*xoff,dy,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,3*dy,dx+2*xoff,dy,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,4*dy,dx+2*xoff,dy,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,5*dy,dx+2*xoff,dy,ILI9341_BLACK);
+  tft.drawRect(x0*dx-xoff,0,dx+2*xoff,dyE,ILI9341_BLACK);
+  tft.drawRect(x0*dx-xoff,dyE,dx+2*xoff,dyE,ILI9341_BLACK);
+  tft.drawRect(x0*dx-xoff,2*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
+  tft.drawRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
+  tft.drawRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
+//  tft.drawRect(x0*dx-xoff,5*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
 
   tft.drawRect(x0*dx-xoff,0,dx+2*xoff,ymax,ILI9341_BLACK);
 }
@@ -246,12 +251,12 @@ void LCD::writeSpeed(float vel) {
     vel = 0.00;
   }
   //erase current speed reading for new reading
-  tft.fillRect(dx-10, 1.7*dy+5, 3*dx, dy, ILI9341_CYAN);
+  tft.fillRect(dx-10, 1.7*dy+5, 3*dx, dy, ILI9341_BLACK);
   //write Speed based on input
   uint16_t xSetSpeed = 1.1*dx-10;
   uint16_t ySetSpeed = 2*dy;
   tft.setCursor(xSetSpeed, ySetSpeed);
-  tft.setTextColor(ILI9341_BLACK); tft.setTextSize(4);
+  tft.setTextColor(ILI9341_WHITE); tft.setTextSize(4);
   tft.println(vel);
 }
 
@@ -277,6 +282,7 @@ void LCD::writeMode(State mode) {
   else if (mode == stateSit) {
     writeSitMode(); //write sitting mode
   }
+  else if (mode == stateDecel) {}
   else {
     writeDE(); //if not in any mode, go to default
   }
@@ -287,6 +293,11 @@ void LCD::writeTurn(js whichTurn) {
   //if turning state is changed, update. otherwise, keep.
   tft.fillRect(0,5*dy,5.8*dx,1*dy,ILI9341_BLUE);
   switch(whichTurn) {
+    case jsBrake:
+      tft.setCursor(46,5*dy+15);
+      tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+      tft.println("Braked");
+      break;
     case jsForward:
       tft.setCursor(35,5*dy+15);
       tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
@@ -309,7 +320,7 @@ void LCD::writeTurn(js whichTurn) {
     default:
       tft.setCursor(46,5*dy+15);
       tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
-      tft.println("Braked");
+      tft.println("");
       break;
   }
 }
