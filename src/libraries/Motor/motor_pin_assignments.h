@@ -24,12 +24,10 @@
 #define M2_OUT3       A2
 #define M2_OUT4       A3
 
-
-
-
-#define M1_IN5        DAC1
 #define M1_IN6        DAC0
-#define M2_IN5        DAC1//11
-#define M2_IN6        DAC0//12
+#define M2_IN6        DAC1 
+
+#define ACC_DAC_SCL 21
+#define ACC_DAC_SDA 20
 
 #define MUX        3

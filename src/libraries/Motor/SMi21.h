@@ -21,12 +21,19 @@ OUT4
 #define SMI21_H
 
 #include "motor_calib_cons.h"
+#include <Adafruit_MCP4725.h>
+
+enum DACAddr {
+  ACC1 = 0x62,
+  ACC2 = 0x63
+};
 
 class SMi21 {
     int onoffPin, direcPin,holdingPin,faststopPin,accPin,spdPin,muxPin,rspdPin,rdirecPin,isrunningPin,errPin;
-  public:
-    SMi21 (int,int,int,int,int,int,int,int,int,int,int);
+    DACAddr _addr;
 
+  public:
+    SMi21 (int,int,int,int,DACAddr addr,int,int,int,int,int,int)
     //functions
     void turnon();
     void turnoff();
@@ -40,15 +47,20 @@ class SMi21 {
     bool checkrunning();
     float readspd();
     bool readdir();
+
+  private:
+      Adafruit_MCP4725 accDAC;
 };
 
 
-SMi21::SMi21 (int in1, int in2,int in3, int in4,int in5, int in6, int mux, int out1, int out2, int out3, int out4) {
+SMi21::SMi21 (int in1, int in2,int in3, int in4, DACAddr addr, int in6, int mux, int out1, int out2, int out3, int out4) {
   onoffPin = in1;
   direcPin = in2;
   holdingPin = in3;
   faststopPin =  in4; //any digital pin
-  accPin =  in5;//any analog pin
+  //accPin =  in5;//any analog pin
+  _addr = addr;
+  accDAC.begin(_addr);
   spdPin =  in6;
   muxPin = mux;
   rspdPin = out1;
@@ -76,18 +88,16 @@ void SMi21::holdingon(){
 void SMi21::holdingoff(){
   digitalWrite(holdingPin,LOW);
 }
+
 void SMi21::setacc(int acc_rpmps){
   //------------------need to determine acc
-  int acc_pwm = 4095-(acc_rpmps-min_acc_rpmps)/(max_acc_rpmps-min_acc_rpmps)*4095;
-  if (acc_pwm < 0){
-    analogWrite(accPin,0);
-  }
-  else if (acc_pwm > 4095){
-    analogWrite(accPin,4095);
-  }
-  else{
-    analogWrite(accPin,acc_pwm);
-  }
+  uint16_t acc_pwm = 4095-(acc_rpmps-min_acc_rpmps)/(max_acc_rpmps-min_acc_rpmps)*4095;
+
+  if(acc_pwm < 0) acc_pwm = 0;
+  if(acc_pwm > 4095) acc_pwm = 4095;
+
+  accDAC.setVoltage(acc_pwm,false);
+
 }
 
 
