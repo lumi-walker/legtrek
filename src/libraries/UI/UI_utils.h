@@ -1,7 +1,6 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
 
-#include "ui_pin_assignments.h"
 /*
 	Contains parameters and functions related to the UI
 */
@@ -9,7 +8,6 @@
 
 // SET SPEED PARAMS
 float dSpeed = 0.1; //speed change
-
 
 //JOYSTICK PARAMS
 double angRead = 0; //angle of pitch

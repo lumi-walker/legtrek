@@ -33,7 +33,7 @@ class SMi21 {
     DACAddr _addr;
 
   public:
-    SMi21 (int,int,int,int,DACAddr addr,int,int,int,int,int,int)
+    SMi21 (int,int,int,int,DACAddr addr,int,int,int,int,int,int);
     //functions
     void turnon();
     void turnoff();
@@ -41,14 +41,14 @@ class SMi21 {
     void faststopoff();
     void holdingon();
     void holdingoff();
-    void setacc(int);
+    void setacc(float);
     void setspd(float);
     void setdirect(bool);
     bool checkrunning();
     float readspd();
     bool readdir();
 
-  private:
+  // private:
       Adafruit_MCP4725 accDAC;
 };
 
@@ -60,7 +60,7 @@ SMi21::SMi21 (int in1, int in2,int in3, int in4, DACAddr addr, int in6, int mux,
   faststopPin =  in4; //any digital pin
   //accPin =  in5;//any analog pin
   _addr = addr;
-  accDAC.begin(_addr);
+  //accDAC.begin(_addr);
   spdPin =  in6;
   muxPin = mux;
   rspdPin = out1;
@@ -89,7 +89,7 @@ void SMi21::holdingoff(){
   digitalWrite(holdingPin,LOW);
 }
 
-void SMi21::setacc(int acc_rpmps){
+void SMi21::setacc(float acc_rpmps){
   //------------------need to determine acc
   uint16_t acc_pwm = 4095-(acc_rpmps-min_acc_rpmps)/(max_acc_rpmps-min_acc_rpmps)*4095;
 
@@ -142,13 +142,7 @@ bool SMi21::checkrunning(){
   }
   return status;
 }
-// float SMi21::readspd(){
-//   int readspeed_vol = analogRead(rspdPin);
-//   float readspeed_rpm = readspeed_vol*10; //------------calibrate!!!
-//   float readspeed_mph = readspeed_rpm/1859;
-//   return readspeed_mph;
-//   Serial.println("real speed is" + String(readspeed_vol));
-// }
+
 
 
 

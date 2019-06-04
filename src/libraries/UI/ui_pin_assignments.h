@@ -1,3 +1,5 @@
+#ifndef UI_PIN_ASSIGNMENTS_H
+#define UI_PIN_ASSIGNMENTS_H
 //DUE pin assignments for the User Interface
 
 // For the Adafruit shield, these are the default.
@@ -26,5 +28,7 @@
 #define TEENSY_PIN 18 //Teensy pin
 #define PROX_PIN 22 //Proximity Sensor Pin
 
-// int CrossPin1 = 2;  // input pin for break beam sensor
-// int CrossPin2 = 8;
+int CrossPin1 = 2;  // input pin for break beam sensor
+int CrossPin2 = 8;
+
+#endif

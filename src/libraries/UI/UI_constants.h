@@ -1,9 +1,15 @@
+#ifndef UI_CONSTANTS_H
+#define UI_CONSTANTS_H
+
+
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9341.h"
+#include "ui_pin_assignments.h"
 //constants
 
-//state constants
+
+// state-machine typedef
 enum {
   stateDE, //Default mode
   stateAA, //Active Assist mode
@@ -15,6 +21,8 @@ enum {
   stateSit, //Sitting mode
   stateDecel //deceling mode
 } typedef State;
+
+
 
 int batterylvl = 100;
 
@@ -60,19 +68,4 @@ bool isBooting = 1;
 bool isBootUp = 0;
 bool isBootDown = 0;
 
-//-----------------------------------------------------------------------------
-
-// active assist util variables
-long debounceThreshold = 200000; //in micros
-
-// period of time to move forward when IR sensors triggered
-long strideStepTime = 3000000;
-// vel setpoint when IR sensors triggered in mph
-float AA_vel_sp = 0.8;
-
-// last time the IR sensor was triggered
-volatile long prevTrigTime;
-
-// start time of valid IR sensor trigger
-volatile bool initStride;
-long strideStartTime;
+#endif
