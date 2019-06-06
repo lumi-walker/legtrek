@@ -16,10 +16,13 @@ long prevSS;
 long prevUP;
 long prevDN;
 long prevTN;
+long prevSit;
 
 float speed_sp;
 float prev_speed;
 double ang_sp;
+
+bool sitting = 0;
 
 //AA def
 int initflag = 0;
@@ -33,7 +36,8 @@ void ISR_JS();  // ISR for joystick button
 void ISR_TN();  // ISR for turn button
 void ISR_UP();  // ISR for up button
 void ISR_DN();  // ISR for down button
-void ISR_AAstep();
+void ISR_AAstep(); //// ISR for IR sensor
+void ISR_isSitting(); // ISR for proximity sensor
 //------------initialize ------------------------------------------------------
 void init_interrupts(){
   //initialize button
@@ -59,6 +63,7 @@ attachInterrupt(digitalPinToInterrupt(bDN), ISR_DN, FALLING);
 attachInterrupt(digitalPinToInterrupt(bTN), ISR_TN, FALLING);
 attachInterrupt(digitalPinToInterrupt(CrossPin1), ISR_AAstep, FALLING);
 attachInterrupt(digitalPinToInterrupt(CrossPin2), ISR_AAstep, FALLING);
+attachInterrupt(digitalPinToInterrupt(isSittingPin), ISR_isSitting, CHANGE);
 interrupts();
 }
 void init_timer(){
@@ -69,6 +74,7 @@ void init_timer(){
   prevUP = millis();
   prevDN = millis();
   prevTN = millis();
+  prevSit = millis();
 }
 //------------state machine functions------------------------------------------
 void runDefaultMode() {
@@ -225,10 +231,12 @@ void ISR_AA() {
 void ISR_JS() {
   if (debounceCheck(prevJS)) {
     if (currentState == stateDE) {
-      //add checking of proximity sensor for sitting joystick
-      currentState = stateJS;
-      currentState = stateSit;
-    } else if (currentState == stateSit) {
+      if (sitting == 1){
+        currentState = stateSit;
+      } else{
+        currentState = stateJS;
+      }
+    } else if (currentState == stateSit || currentState == stateJS) {
       // go to decel state first
       currentState = stateDecel;
       // go to default after decel state
@@ -305,5 +313,13 @@ void ISR_AAstep() {
   }
 }
 
+void ISR_isSitting(){
+  if (debounceCheck(prevSit)) {
+    sitting = 0;
+    if (digitalRead(isSittingPin) == 1){
+      bool sitting = 1;
+    }
+  }
+}
 
 #endif

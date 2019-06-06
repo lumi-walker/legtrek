@@ -7,7 +7,6 @@
 #define M1_IN4        37
 
 
-
 #define M1_OUT1       6
 #define M1_OUT2       7
 #define M1_OUT3       A0
@@ -25,7 +24,7 @@
 #define M2_OUT4       A3
 
 #define M1_IN6        DAC0
-#define M2_IN6        DAC1 
+#define M2_IN6        DAC1
 
 #define ACC_DAC_SCL 21
 #define ACC_DAC_SDA 20

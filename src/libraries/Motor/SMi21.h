@@ -24,8 +24,8 @@ OUT4
 #include <Adafruit_MCP4725.h>
 
 enum DACAddr {
-  ACC1 = 0x62,
-  ACC2 = 0x63
+  ACC1 = 0x63,
+  ACC2 = 0x62
 };
 
 class SMi21 {
