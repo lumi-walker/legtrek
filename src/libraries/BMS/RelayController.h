@@ -3,7 +3,7 @@
 
 #include "BMS_pin_assignments.h"
 #include <Arduino.h>
-#include<TimerOne.h>
+
 
 #define PULSE_DURATION_MICROS 250000
 
@@ -22,7 +22,7 @@ public:
 
 	  	digitalWrite(A1,LOW);
 	  	digitalWrite(A2,HIGH);
-		
+
 		prevT = micros();
 		while(micros() - prevT < PULSE_DURATION_MICROS);
 
@@ -31,17 +31,17 @@ public:
 	}
 
 	void disconnect() {
-  
-	  
+
+
 	  	digitalWrite(A1,HIGH);
 	  	digitalWrite(A2,LOW);
-		
+
 		prevT = micros();
 		while(micros() - prevT < PULSE_DURATION_MICROS);
 
 		neutralize();
 
-		
+
 	}
 
 	void neutralize() {

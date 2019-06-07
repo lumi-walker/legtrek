@@ -1,6 +1,7 @@
 #ifndef UI_UTILS_H
 #define UI_UTILS_H
-
+#include "BMS.h"
+#include "BMSUtils.h"
 /*
 	Contains parameters and functions related to the UI
 */
@@ -54,5 +55,6 @@ void readJoystick() {
   rRead = sqrt(pow(xR,2) + pow(yR,2));
 }
 
-
+RelayController relayController(PWR_PIN_1,PWR_PIN_2);
+TemperatureMonitor temperatureMonitor;
 #endif

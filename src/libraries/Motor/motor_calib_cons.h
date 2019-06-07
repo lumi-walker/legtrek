@@ -6,8 +6,8 @@ bool FORWARD = true;
 bool REVERSE = false;
 
 //speed calibration (range .55V-2.75V)
-float minSpeed = 0.3; //minimum limit in set speed
-float maxSpeed = 1.5; //maximum limit in set speed
+float minSpeed = 0.24; //minimum limit in set speed
+float maxSpeed = 1.2; //maximum limit in set speed
 //acc calibration (range 0V-5V)
 int min_acc_rpmps = 0;
 int max_acc_rpmps = 3270;

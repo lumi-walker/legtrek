@@ -1,5 +1,9 @@
-#include "LCD.h"
+
 #include "state_machine_utils.h"
+
+float temp;
+std::vector<ErrorStatus> tempErrStatus;
+float voltage;
 
 void setup() {
   // put your setup code here, to run once:
@@ -10,64 +14,99 @@ void setup() {
   prevState = stateDE;
   LCD.loadingScreen();
   init_timer();
-  motor_init();
-  motor_ready();
+  init_motor();
+  init_BMS();
   LCD.startScreen();
+  relayController.connect();
   Serial.println("ready");
 }
 
 void loop() {
-    Serial.println(currentState);
-    if (currentState != prevState) {
-      LCD.writeMode(currentState);
-      prevState = currentState;
-    }
-  
-    switch (currentState) {
-      case stateDE:
-        //DEFAULT MODE
-        runDefaultMode();
-        break;
-      case stateAA:
-        //ACTIVE ASSIST MODE
-        runActiveAssistMode();
-        break;
-      case stateJS:
-        //JOYSTICK MODE
-        runJoystickMode();
-        break;
-      case stateSS:
-        //SETSPEED MODE
-        runSetSpeedMode();
-        break;
-      case stateCE:
-        //CRITICAL ERROR MODE
-        runCriticalErrorMode();
-        break;
-      case stateTurnAA:
-        //TURNING IN ACTIVE ASSIST
-        runJoystickMode();
-        break;
-      case stateTurnSS:
-        //TURNING IN SET SPEED
-        runJoystickMode();
-        break;
-      case stateSit:
-        //SITTING MODE
-        runJoystickMode();
-        break;
-      case stateDecel:
-        // DECEL MODE
-        runDecelMode();
-        break;
-    }
-  
-    if ((speed_sp  > prev_speed + 0.01 || speed_sp < prev_speed - 0.01)) { //write speed if speed_sp has updated;
-      LCD.writeSpeed(speed_sp);
-      prev_speed = speed_sp;
-    }
-    if (currTurn != prevTurn) {
-      LCD.writeTurn(currTurn);
-      prevTurn = currTurn;
-    }
+  //check for temperature and voltage
+
+//  if (temperatureMonitor.readTemperature(temp, tempErrStatus) == 0) {
+//    for (int i = 0; i < tempErrStatus.size(); i++) {
+//      if (tempErrStatus[i].errMsg == OVER_TEMPERATURE) {
+//        is_OVER_TEMP = 1;
+//        // go to decel state first
+//        currentState = stateDecel;
+//        // go to default after decel state
+//        requestedState = stateCE;
+//      }
+//
+//      if (tempErrStatus[i].errMsg == FAULTY_TEMPERATURE_SENSOR) {
+//        // print error to lcd
+//        is_FAULTY_TEMP_SENSOR = 1;
+//      }
+//    }
+//  }
+
+//  is_LOW_VOLT = 1;
+  if (isMotorCorrect() == 0) {
+    is_MOTOR_ERROR = 1;
+    // go to decel state first
+    currentState = stateDecel;
+    // go to default after decel state
+    requestedState = stateCE;
+  }
+
+
+//  LCD.writeBatteryLevel(voltage);
+
+  LCD.writeErrorPanel();
+
+  if (currentState != prevState) {
+    LCD.writeMode(currentState);
+    prevState = currentState;
+  }
+  if ((speed_sp  > prev_speed + 0.01 || speed_sp < prev_speed - 0.01)) { //write speed if speed_sp has updated;
+    LCD.writeSpeed(speed_sp);
+    prev_speed = speed_sp;
+  }
+  if (currTurn != prevTurn) {
+    LCD.writeTurn(currTurn);
+    prevTurn = currTurn;
+  }
+
+
+  switch (currentState) {
+    case stateDE:
+      //DEFAULT MODE
+      runDefaultMode();
+      break;
+    case stateAA:
+      //ACTIVE ASSIST MODE
+      runActiveAssistMode();
+      break;
+    case stateJS:
+      //JOYSTICK MODE
+      runJoystickMode();
+      break;
+    case stateSS:
+      //SETSPEED MODE
+      runSetSpeedMode();
+      break;
+    case stateCE:
+      //CRITICAL ERROR MODE
+      runCriticalErrorMode();
+      break;
+    case stateTurnAA:
+      //TURNING IN ACTIVE ASSIST
+      runJoystickMode();
+      break;
+    case stateTurnSS:
+      //TURNING IN SET SPEED
+      runJoystickMode();
+      break;
+    case stateSit:
+      //SITTING MODE
+      runJoystickMode();
+      break;
+    case stateDecel:
+      // DECEL MODE
+      runDecelMode();
+      break;
+  }
+
+
 }

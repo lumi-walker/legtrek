@@ -4,14 +4,14 @@
 #include <SPI.h>
 #include "TemperatureMonitor.h"
 #include "RelayController.h"
-#include "ErrorLogger.h"
+// #include "ErrorLogger.h"
 #define MAX_VOLTAGE_THRESHOLD 46
 #define MIN_VOLTAGE_THRESHOLD 36
 #define MAX_CURRENT_THRESHOLD 30
 #define MAX_TEMPERATURE_THRESHOLD 60 //modify this
 
 
-void init() {
+void init_BMS() {
 	pinMode(PWR_PIN_1, OUTPUT);
 	pinMode(PWR_PIN_2, OUTPUT);
 /*
@@ -33,4 +33,3 @@ void init() {
 	SPI.begin();
 
 }
-

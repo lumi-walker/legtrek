@@ -47,7 +47,7 @@ class SMi21 {
     bool checkrunning();
     float readspd();
     bool readdir();
-
+    bool checkmotorerror();
   // private:
       Adafruit_MCP4725 accDAC;
 };
@@ -142,8 +142,10 @@ bool SMi21::checkrunning(){
   }
   return status;
 }
-
-
+bool SMi21::checkmotorerror(){
+  bool noerror =digitalRead(errPin);
+  return noerror;
+}
 
 
 #endif

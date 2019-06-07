@@ -31,6 +31,6 @@
 int CrossPin1 = 2;  // input pin for break beam sensor
 int CrossPin2 = 8;
 
-int isSittingPin = 11;
+
 
 #endif

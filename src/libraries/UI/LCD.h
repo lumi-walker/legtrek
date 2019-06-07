@@ -193,7 +193,7 @@ void LCD::writeBatteryLevel(int voltage) {
 void LCD::writeErrorPanel() {
   //if detect motor error change box to red, otherwise remain green
   uint16_t x0 = 6;
-  uint16_t dyE = ymax/5;
+  uint16_t dyE = ymax/4;
   uint16_t xoff = 5;
   if(is_MOTOR_ERROR) { //CHECK WITH MIN LATER
     tft.fillRect(x0*dx-xoff,0,dx+2*xoff,dyE, ILI9341_RED);
@@ -215,25 +215,17 @@ void LCD::writeErrorPanel() {
   else {
     tft.fillRect(x0*dx-xoff,2*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
-  //if detect over voltage, same action as above
-  if(is_OVER_VOLT) {
+  //if detect low voltage(low battery), same action as above
+  if(is_LOW_VOLT) {
     tft.fillRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE, ILI9341_RED);
   }
   else {
     tft.fillRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
   }
-  //if detect low voltage(low battery), same action as above
-  if(is_LOW_VOLT) {
-    tft.fillRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE, ILI9341_RED);
-  }
-  else {
-    tft.fillRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE, ILI9341_GREEN);
-  }
   tft.drawRect(x0*dx-xoff,0,dx+2*xoff,dyE,ILI9341_BLACK);
   tft.drawRect(x0*dx-xoff,dyE,dx+2*xoff,dyE,ILI9341_BLACK);
   tft.drawRect(x0*dx-xoff,2*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
   tft.drawRect(x0*dx-xoff,3*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
-  tft.drawRect(x0*dx-xoff,4*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
 //  tft.drawRect(x0*dx-xoff,5*dyE,dx+2*xoff,dyE,ILI9341_BLACK);
 
   tft.drawRect(x0*dx-xoff,0,dx+2*xoff,ymax,ILI9341_BLACK);

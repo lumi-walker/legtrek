@@ -10,7 +10,7 @@ bool realMotorDirection(int);
 SMi21 M1(M1_IN1,M1_IN2,M1_IN3,M1_IN4,ACC1,M1_IN6,MUX,M1_OUT1,M1_OUT2,M1_OUT3,M1_OUT4);
 SMi21 M2(M2_IN1,M2_IN2,M2_IN3,M2_IN4,ACC2,M2_IN6,MUX,M2_OUT1,M2_OUT2,M2_OUT3,M2_OUT4);
 
-void motor_init() {
+void init_motor() {
 	pinMode(M1_IN1, OUTPUT);
 	pinMode(M1_IN2, OUTPUT);
 	pinMode(M1_IN3, OUTPUT);
@@ -36,22 +36,20 @@ void motor_init() {
 	pinMode(MUX,OUTPUT);
   M1.accDAC.begin(ACC1);
   M2.accDAC.begin(ACC2);
-}
-
-void motor_ready(){
 	analogWriteResolution(12);
 	M1.turnon();
-  M2.turnon();
+	M2.turnon();
 
-  M1.faststopoff();
+	M1.faststopoff();
 	M2.faststopoff();
 
-  M1.holdingoff();
-  M2.holdingoff();
+	M1.holdingoff();
+	M2.holdingoff();
 
 	M1.setacc(DEFAULT_ACCEL);
 	M2.setacc(DEFAULT_ACCEL);
 }
+
 
 void drive(float speed, double angle){
 	//expected input angle: 0,PI,PI/2,(15-75 degree),(105-165 degree)
@@ -123,5 +121,11 @@ bool isMotorRunning(){
 	return running;
 }
 
-
+bool isMotorCorrect(){
+	bool motor_noerror = 0;
+	if (M1.checkmotorerror()==1 && M2.checkmotorerror()==1){
+		motor_noerror = 1;
+	}
+	return motor_noerror;
+}
 #endif

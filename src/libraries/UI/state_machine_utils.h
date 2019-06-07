@@ -3,7 +3,7 @@
 #include "Motor.h"
 #include "UI_constants.h"
 #include "UI_utils.h"
-
+#include "LCD.h"
 
 State currentState;
 State prevState;
@@ -23,6 +23,7 @@ float prev_speed;
 double ang_sp;
 
 bool sitting = 0;
+bool isConnected = 1;
 
 //AA def
 int initflag = 0;
@@ -63,7 +64,7 @@ attachInterrupt(digitalPinToInterrupt(bDN), ISR_DN, FALLING);
 attachInterrupt(digitalPinToInterrupt(bTN), ISR_TN, FALLING);
 attachInterrupt(digitalPinToInterrupt(CrossPin1), ISR_AAstep, FALLING);
 attachInterrupt(digitalPinToInterrupt(CrossPin2), ISR_AAstep, FALLING);
-attachInterrupt(digitalPinToInterrupt(isSittingPin), ISR_isSitting, CHANGE);
+attachInterrupt(digitalPinToInterrupt(PROX_PIN), ISR_isSitting, CHANGE);
 interrupts();
 }
 void init_timer(){
@@ -118,7 +119,9 @@ void runJoystickMode() {
     //------------why----------------------------------------
     // speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
     speed_sp = (rRead - rDeadBand)* (maxSpeed-minSpeed) +minSpeed;
-
+    if (speed_sp<1) {
+      speed_sp = 1;
+    }
     // valid radius -> determine direction
     if (angRead < rturn_max  || angRead > rturn_min) {
       // right turn
@@ -134,7 +137,7 @@ void runJoystickMode() {
       ang_sp = PI / 2;
       currTurn = jsForward;
       Serial.println("FORWARD");
-    } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 5) {
+    } else if (angRead >= back_min && angRead <= back_max && rRead > rDeadBand * 7) {
       speed_sp = .3;
       ang_sp = 3 * PI / 2;
       currTurn = jsBackward;
@@ -190,6 +193,10 @@ void runSetSpeedMode() {
 void runCriticalErrorMode(){
   speed_sp = 0.0;
   drive(speed_sp, PI / 2);
+  if (isConnected = 1){
+    relayController.disconnect(); //disconnect power
+  }
+  LCD.batteryRemoval(); //indicate user that it's safe to remove battery
 }
 
 void runDecelMode(){
@@ -316,7 +323,7 @@ void ISR_AAstep() {
 void ISR_isSitting(){
   if (debounceCheck(prevSit)) {
     sitting = 0;
-    if (digitalRead(isSittingPin) == 1){
+    if (digitalRead(PROX_PIN) == 1){
       bool sitting = 1;
     }
   }
