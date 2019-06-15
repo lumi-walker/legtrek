@@ -53,52 +53,47 @@ void init_motor() {
 
 void drive(float speed, double angle){
 	//expected input angle: 0,PI,PI/2,(15-75 degree),(105-165 degree)
-	M1.setspd(speed);
-  M2.setspd(speed);
-
 	bool M1direct=FORWARD;
 	bool M2direct=FORWARD;
+	float M1acc = DEFAULT_ACCEL;
+	float M2acc = DEFAULT_ACCEL;
+	float M1spd = speed;
+	float M2spd = speed;
   float slowerspeed;
 	float sloweracc;
 	if (angle == 0){//right turn in place
 		M1direct=FORWARD;
 		M2direct=REVERSE;
-		M1.setacc(DEFAULT_ACCEL);
-		M2.setacc(DEFAULT_ACCEL);
 	}else if(angle == PI){//left turn in place
 		M1direct=REVERSE;
 		M2direct=FORWARD;
-		M1.setacc(DEFAULT_ACCEL);
-		M2.setacc(DEFAULT_ACCEL);
 	}else if(angle == 3*PI/2){//backward
 		M1direct=REVERSE;
 		M2direct=REVERSE;
-		M1.setacc(DEFAULT_ACCEL);
-		M2.setacc(DEFAULT_ACCEL);
 	}else if(angle == PI/2){//backward
 		M1direct=FORWARD;
 		M2direct=FORWARD;
-		M1.setacc(DEFAULT_ACCEL);
-		M2.setacc(DEFAULT_ACCEL);
 	}else{//turn in arc
 		if(angle <= 75*PI/180){
-			M1.setspd(speed);
 			slowerspeed = (angle-(15*PI/180))/(60*PI/180)*(speed-minSpeed)+minSpeed; //linear mapping
-			M2.setspd(slowerspeed);
+			M2spd = slowerspeed;
 			sloweracc = (slowerspeed/speed)*DEFAULT_ACCEL;
-			M2.setacc(sloweracc);
+			M2acc = sloweracc;
 			Serial.println("sloweracc is:"+String(sloweracc));
 		}else if(angle >= 105*PI/180){
-			M2.setspd(speed);
 			slowerspeed = speed - (angle-(105*PI/180))/(60*PI/180)*(speed-minSpeed); //linear mapping
-			M1.setspd(slowerspeed);
+			M1spd = slowerspeed;
 			sloweracc = (slowerspeed/speed)*DEFAULT_ACCEL;
-			M2.setacc(sloweracc);
+			M1acc=sloweracc;
 			Serial.println("sloweracc is:"+String(sloweracc));
 		}
 	}
 	M1.setdirect(M1direct);
 	M2.setdirect(M2direct);
+	M1.setacc(M1acc);
+	M2.setacc(M2acc);
+	M1.setspd(M1spd);
+  M2.setspd(M2spd);
   Serial.println("speed setpoint is:" + String(speed));
 }
 

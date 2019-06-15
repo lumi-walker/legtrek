@@ -61,7 +61,7 @@ uint16_t  dx = tft.width()/7;
 uint16_t  dy = tft.height()/6;
 
 //debounce for buttons
-long debounceThresh = 500; //threshold in milliseconds
+long debounceThresh = 500000; //threshold in microsecs
 
 //booting stages
 bool isBooting = 1;

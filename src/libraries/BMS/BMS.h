@@ -25,11 +25,11 @@ void init_BMS() {
 
 	pinMode(V_SENSE_READ_PIN, INPUT);
 
-	pinMode(DUE2TEENSY_CALL_PIN, INPUT);
-	pinMode(DUE_RX_PIN, INPUT);
-	pinMode(TEENSY2DUE_CALL_PIN, OUTPUT);
-	pinMode(TEENSY_TX_PIN, OUTPUT);
+	// pinMode(DUE2TEENSY_CALL_PIN, INPUT);
+	// pinMode(DUE_RX_PIN, INPUT);
+	// pinMode(TEENSY2DUE_CALL_PIN, OUTPUT);
+	// pinMode(TEENSY_TX_PIN, OUTPUT);
 
-	SPI.begin();
+	// SPI.begin();
 
 }

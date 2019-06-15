@@ -1,6 +1,6 @@
 
 #include "state_machine_utils.h"
-
+//#include "voltage_monitor.h"
 float temp;
 std::vector<ErrorStatus> tempErrStatus;
 float voltage;
@@ -15,15 +15,15 @@ void setup() {
   LCD.loadingScreen();
   init_timer();
   init_motor();
-  init_BMS();
+//  init_BMS();
   LCD.startScreen();
-  relayController.connect();
+//  relayController.connect();
   Serial.println("ready");
 }
 
 void loop() {
   //check for temperature and voltage
-
+Serial.println("current mode is" + String(currentState));
 //  if (temperatureMonitor.readTemperature(temp, tempErrStatus) == 0) {
 //    for (int i = 0; i < tempErrStatus.size(); i++) {
 //      if (tempErrStatus[i].errMsg == OVER_TEMPERATURE) {
@@ -40,15 +40,16 @@ void loop() {
 //      }
 //    }
 //  }
+float ADCread = analogRead(V_SENSE_READ_PIN)*3.3/1024* 16;
 
 //  is_LOW_VOLT = 1;
-  if (isMotorCorrect() == 0) {
-    is_MOTOR_ERROR = 1;
-    // go to decel state first
-    currentState = stateDecel;
-    // go to default after decel state
-    requestedState = stateCE;
-  }
+//  if (isMotorCorrect() == 0) {
+//    is_MOTOR_ERROR = 1;
+//    // go to decel state first
+//    currentState = stateDecel;
+//    // go to default after decel state
+//    requestedState = stateCE;
+//  }
 
 
 //  LCD.writeBatteryLevel(voltage);

@@ -118,8 +118,9 @@ void runJoystickMode() {
   if (rRead > rDeadBand) {
     //------------why----------------------------------------
     // speed_sp = (rRead - rDeadBand) * speed_sp + minSpeed;
-    speed_sp = (rRead - rDeadBand)* (maxSpeed-minSpeed) +minSpeed;
-    if (speed_sp<1) {
+    // speed_sp = (rRead - rDeadBand)* (maxSpeed-minSpeed) +minSpeed;
+    speed_sp = float(0.3056*rRead*rRead + 0.5083*rRead + 0.1861); //parabola for smoother transition
+    if (speed_sp>1) {
       speed_sp = 1;
     }
     // valid radius -> determine direction
@@ -128,11 +129,13 @@ void runJoystickMode() {
       Serial.println("RIGHT TURN : " + String(speed_sp));
       currTurn = jsRight;
       ang_sp = 0; // radians
+      speed_sp = speed_sp/2; //slower speed when turning
     } else if (angRead < lturn_max && angRead > lturn_min) {
       // left turn
       Serial.println("LEFT TURN : " + String(speed_sp));
       currTurn = jsLeft;
       ang_sp = PI;
+      speed_sp = speed_sp/2; //slower speed when turning
     } else if (angRead >= forward_min && angRead <= forward_max) {
       ang_sp = PI / 2;
       currTurn = jsForward;
@@ -164,6 +167,7 @@ void runJoystickMode() {
   drive(speed_sp, ang_sp);
   if (currentState == stateJS || currentState == stateSit ){
     buttonBlink(lJS);
+    buttonBlink(lTN);
   } else if (currentState == stateTurnAA){
     buttonBlink(lTN);
     buttonBlink(lAA);
@@ -204,9 +208,9 @@ void runDecelMode(){
 drive(speed_sp, ang_sp);
 Serial.println("motor status" + String(isMotorRunning()));
 
-if (isMotorRunning() == false) {
+// if (isMotorRunning() == false) {
   currentState = requestedState;
-}
+// }
 }
 
 //-----------------------------------------------------------------------------
@@ -306,6 +310,18 @@ void ISR_TN() {
     }
     else if (currentState == stateTurnAA) {
       requestedState = stateAA;
+      currentState = stateDecel;
+    }else if (currentState == stateDE && sitting == 0){
+      requestedState = stateJS;
+      currentState = stateDecel;
+    }else if (currentState == stateJS){
+      requestedState = stateDE;
+      currentState = stateDecel;
+    }else if (currentState == stateDE && sitting == 1){
+      requestedState = stateSit;
+      currentState = stateDecel;
+    }else if (currentState == stateSit){
+      requestedState = stateDE;
       currentState = stateDecel;
     }
   }
